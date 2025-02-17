@@ -9,7 +9,6 @@ let app = express();
 app.use(express.json());
 
 
-
 async function bootstaprt() {
   try {
     await database.sync(

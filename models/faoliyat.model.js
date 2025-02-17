@@ -1,5 +1,6 @@
 import database from "../config/db";
 import { DataTypes } from "sequelize";
+import Filiallar from "./filiallar.model.js";
 
 const Faoliyat = database.define("faoliyat", {
     id: {
@@ -22,7 +23,15 @@ const Faoliyat = database.define("faoliyat", {
     filialId: {
         type: DataTypes.INTEGER,
         allowNull: true,
+        references: {
+            model: Filiallar,
+            key: "id"
+        }
     },
 });
+
+Filiallar.hasMany(Faoliyat,{ foreignKey: "filialId", onDelete: "CASCADE" })
+Faoliyat.belongsTo(Filiallar,{ foreignKey: "filialId", onDelete: "CASCADE" })
+
 
 export default Faoliyat;

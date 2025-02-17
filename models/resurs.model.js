@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import database from "../config/db.js";
 import ResursCategory from "./resursCategory.model.js";
-
+import User from "./user.model.js";
 
 const Resurs = database.define("resurs", {
     name: {
@@ -37,5 +37,12 @@ const Resurs = database.define("resurs", {
         }
     }
 }, {timestamps: true})
+
+
+User.hasMany(Resurs, { foreignKey: "userId" });
+Resurs.belongsTo(User, { foreignKey: "userId" });
+
+ResursCategory.hasMany(Resurs, { foreignKey: "resursCategoryId" });
+Resurs.belongsTo(ResursCategory, { foreignKey: "resursCategoryId" });
 
 export default Resurs;

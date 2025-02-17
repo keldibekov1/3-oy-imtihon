@@ -1,4 +1,4 @@
-import database from "../config/db.js";
+import database from "../config/db";
 import { DataTypes } from "sequelize";
 
 const UquvMarkaz = database.define("uquvMarkaz", {

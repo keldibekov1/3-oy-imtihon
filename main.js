@@ -4,8 +4,6 @@ import database from "./config/db.js";
 import setupSwagger from "./config/swagger.js";
 
 
-
-
 let PORT = 3000;
 let app = express();
 

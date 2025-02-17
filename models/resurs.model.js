@@ -11,7 +11,12 @@ const Resurs = database.define("Resurs", {
   nomi: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notNull: { msg: "Nomi kiritilishi shart" },
+      notEmpty: { msg: "Nomi bo‘sh bo‘lishi mumkin emas" },
+    },
   },
+  
   media: {
     type: DataTypes.STRING,
   },

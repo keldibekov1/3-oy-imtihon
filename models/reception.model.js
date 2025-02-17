@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import database from "../config/db";
+import database from "../config/db.js";
 import OquvMarkaz from "./uquvMarkaz.model.js"
 import User from "./user.model.js";
 const Reception = database.define("Reception", {

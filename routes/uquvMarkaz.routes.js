@@ -1,8 +1,8 @@
-import { Router } from "express";
+import express from "express";
 import { create, findAll, findOne, remove, update } from "../controllers/uquvMarkaz.controller.js";
 
 
-const uquvMarkazroute = Router();
+const uquvMarkazroute = express.Router();
 
 uquvMarkazroute.get("/all", findAll);
 uquvMarkazroute.get("/:id", findOne);

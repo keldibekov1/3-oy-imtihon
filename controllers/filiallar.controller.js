@@ -33,7 +33,7 @@ const createFilial = async (req, res) => {
 const getAllFiliallar = async (req, res) => {
   try {
     const filiallar = await Filial.findAll({
-      include: ["OquvMarkaz"], // Filial va uning tegishli O‘quv Markazi bilan birga olish
+      include: [OquvMarkaz], // Filial va uning tegishli O‘quv Markazi bilan birga olish
     });
 
     return res.status(200).json(filiallar); // Filiallar ro‘yxatini qaytarish

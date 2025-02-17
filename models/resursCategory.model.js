@@ -1,16 +1,19 @@
-import { DataTypes } from "sequelize";
-import database from "../config/db.js";
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
 
-
-const ResursCategory = database.define("resursCategory", {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    photo: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
-})
+const ResursCategory = sequelize.define("ResursCategory", {
+  id: {
+    type: DataTypes.BIGINT,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  photo: {
+    type: DataTypes.STRING,
+  },
+});
 
 export default ResursCategory;

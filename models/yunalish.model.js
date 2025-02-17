@@ -1,31 +1,26 @@
-import database from "../config/db";
-import { DataTypes } from "sequelize";
-import Faoliyat from "./faoliyat.model.js";
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
 
-const Yunalish = database.define("Yunalish", {
-    id: {
-        type: DataTypes.BIGINT,
-        primaryKey: true,
-        autoIncrement: true,
+const Yonalish = sequelize.define("Yonalish", {
+  id: {
+    type: DataTypes.BIGINT,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  photo: {
+    type: DataTypes.STRING,
+  },
+  faoliyatid: {
+    type: DataTypes.BIGINT,
+    references: {
+      model: "Faoliyat",
+      key: "id",
     },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    photo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    faoliyatId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: Faoliyat,
-            key: "id"
-        }
-    },
+  },
 });
-Faoliyat.hasMany(Yunalish,{ foreignKey: "faoliyatId", onDelete: "CASCADE" } );
-Yunalish.belongsTo(Faoliyat,{ foreignKey: "faoliyatId", onDelete: "CASCADE" } );
 
-export default Yunalish;
+export default Yonalish;

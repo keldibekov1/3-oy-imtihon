@@ -1,37 +1,30 @@
-import database from "../config/db";
-import { DataTypes } from "sequelize";
-import Filiallar from "./filiallar.model.js";
-
-const Faoliyat = database.define("faoliyat", {
+const Faoliyat = sequelize.define("Faoliyat", {
     id: {
-        type: DataTypes.BIGINT,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.BIGINT,
+      autoIncrement: true,
+      primaryKey: true,
     },
     type: {
-        type: DataTypes.STRING,
-        allowNull: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     photo: {
-        type: DataTypes.STRING,
-        allowNull: true,
+      type: DataTypes.STRING,
     },
     filialId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: Filiallar,
-            key: "id"
-        }
+      type: DataTypes.BIGINT,
+      references: {
+        model: "Filial",
+        key: "id",
+      },
     },
-});
+  });
+  
+  Filial.hasMany(Faoliyat);
+  Faoliyat.belongsTo(Filial);
 
-Filiallar.hasMany(Faoliyat,{ foreignKey: "filialId", onDelete: "CASCADE" })
-Faoliyat.belongsTo(Filiallar,{ foreignKey: "filialId", onDelete: "CASCADE" })
-
-
-export default Faoliyat;
+  export default Faoliyat;

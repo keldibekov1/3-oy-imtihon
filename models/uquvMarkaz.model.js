@@ -1,32 +1,36 @@
-import database from "../config/db";
-import { DataTypes } from "sequelize";
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
 
-const UquvMarkaz = database.define("uquvMarkaz", {
-    id: {
-        type: DataTypes.BIGINT,
-        primaryKey: true,
-        autoIncrement: true,
+const OquvMarkaz = sequelize.define("OquvMarkaz", {
+  id: {
+    type: DataTypes.BIGINT,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  photo: {
+    type: DataTypes.STRING,
+  },
+  region: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  createdBy: {
+    type: DataTypes.BIGINT,
+    references: {
+      model: "User", 
+      key: "id",
     },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    photo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    region: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    filiallar_soni: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-    }
+    allowNull: false,
+  },
 });
 
-export default UquvMarkaz;
+
+export default OquvMarkaz;

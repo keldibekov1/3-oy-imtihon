@@ -1,44 +1,39 @@
-import database from "../config/db.js";
-import { DataTypes } from "sequelize";
-import UquvMarkaz from "./uquvMarkaz.model.js";
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
 
-const Filiallar = database.define("filiallar", {
-    id: {
-        type: DataTypes.BIGINT,
-        primaryKey: true,
-        autoIncrement: true,
+const Filial = sequelize.define("Filial", {
+  id: {
+    type: DataTypes.BIGINT,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  photo: {
+    type: DataTypes.STRING,
+  },
+  region: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  oquvmarkazId: {
+    type: DataTypes.BIGINT,
+    references: {
+      model: "OquvMarkaz",
+      key: "id",
     },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    photo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    region: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    phone: {
-        type: DataTypes.STRING,
-        defaultValue: 0,
-    },
-    uquvmarkazId:{
-        type:DataTypes.INTEGER,
-        allowNull:true,
-        references: {
-            model: UquvMarkaz,
-            key: "id"
-        }
-    }
+  },
 });
 
-UquvMarkaz.hasMany(Filiallar, { foreignKey: "uquvmarkazId", onDelete: "CASCADE" });
-Filiallar.belongsTo(UquvMarkaz, { foreignKey: "uquvmarkazId", onDelete: "CASCADE" });
-
-export default Filiallar;
+export default Filial;

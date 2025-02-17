@@ -4,12 +4,8 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-<<<<<<< HEAD
-    "dev": "node --watch main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-=======
+
     "dev": "node --watch main.js"
->>>>>>> 22e7f0a2b85cf38f8096ad06105071ecb6d87378
   },
   "keywords": [],
   "author": "",

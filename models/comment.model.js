@@ -1,7 +1,7 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+import { DataTypes } from "sequelize";
+import database from "../config/db.js";
 
-const Comment = sequelize.define("Comment", {
+const Comment = database.define("Comment", {
   id: {
     type: DataTypes.BIGINT,
     autoIncrement: true,

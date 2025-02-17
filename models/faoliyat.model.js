@@ -1,4 +1,7 @@
-const Faoliyat = sequelize.define("Faoliyat", {
+import database from "../config/db.js";
+import { DataTypes } from "sequelize";
+
+const Faoliyat = database.define("Faoliyat", {
     id: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
@@ -24,7 +27,5 @@ const Faoliyat = sequelize.define("Faoliyat", {
     },
   });
   
-  Filial.hasMany(Faoliyat);
-  Faoliyat.belongsTo(Filial);
 
   export default Faoliyat;

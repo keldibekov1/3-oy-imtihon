@@ -1,7 +1,7 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+import { DataTypes } from "sequelize";
+import database from "../config/db.js";
 
-const Yonalish = sequelize.define("Yonalish", {
+const Yonalish = database.define("Yonalish", {
   id: {
     type: DataTypes.BIGINT,
     autoIncrement: true,

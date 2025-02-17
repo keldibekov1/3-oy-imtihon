@@ -1,7 +1,7 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+import { DataTypes } from "sequelize";
+import database from "../config/db.js";
 
-const ResursCategory = sequelize.define("ResursCategory", {
+const ResursCategory = database.define("ResursCategory", {
   id: {
     type: DataTypes.BIGINT,
     autoIncrement: true,

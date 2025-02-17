@@ -1,8 +1,6 @@
 import express from "express";
 import database from "./config/db.js";
 
-
-
 let PORT = 3000;
 let app = express();
 

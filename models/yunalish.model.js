@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import database from "../config/db.js";
-
+import Faoliyat from "./faoliyat.model.js";
 const Yonalish = database.define("Yonalish", {
   id: {
     type: DataTypes.BIGINT,
@@ -17,7 +17,7 @@ const Yonalish = database.define("Yonalish", {
   faoliyatid: {
     type: DataTypes.BIGINT,
     references: {
-      model: "Faoliyat",
+      model: Faoliyat,
       key: "id",
     },
   },

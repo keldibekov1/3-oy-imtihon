@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import database from "../config/db.js";
-
+import User from "./user.model.js";
+import ResursCategory from "./resursCategory.model.js"
 const Resurs = database.define("Resurs", {
   id: {
     type: DataTypes.BIGINT,
@@ -24,7 +25,7 @@ const Resurs = database.define("Resurs", {
   createdBy: {
     type: DataTypes.BIGINT,
     references: {
-      model: "User",
+      model: User,
       key: "id",
     },
   },
@@ -35,7 +36,7 @@ const Resurs = database.define("Resurs", {
   resursCategoryId: {
     type: DataTypes.BIGINT,
     references: {
-      model: "ResursCategory",
+      model: ResursCategory,
       key: "id",
     },
   },

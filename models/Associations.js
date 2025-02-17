@@ -7,6 +7,10 @@ import Comment from "./comment.model.js";
 import UserLikes from "./userLikes.model.js";
 import Reception from "./reception.model.js";
 import Yonalish from "./yunalish.model.js";
+import Faoliyat from "./faoliyat.model.js"; 
+
+Filial.belongsTo(Faoliyat);
+Faoliyat.hasMany(Filial);
 
 // User - O'quv Markazlari Like Many-to-Many
 User.belongsToMany(OquvMarkaz, { through: UserLikes });

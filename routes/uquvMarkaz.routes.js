@@ -4,10 +4,11 @@ import { create, findAll, findOne, remove, update } from "../controllers/uquvMar
 
 const uquvMarkazroute = Router();
 
-uquvMarkazroute.get("/", findAll);
-uquvMarkazroute.get("/", findOne);
-uquvMarkazroute.get("/", create);
-uquvMarkazroute.get("/", update);
-uquvMarkazroute.get("/", remove);
+uquvMarkazroute.get("/all", findAll);
+uquvMarkazroute.get("/:id", findOne);
+uquvMarkazroute.post("/", create);
+uquvMarkazroute.get("/:id", update);
+uquvMarkazroute.get("/:id", remove);
+
 
 export default uquvMarkazroute;

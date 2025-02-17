@@ -2,6 +2,7 @@ import express from "express";
 import authRouter from "./routes/user.routes.js";
 import database from "./config/db.js";
 import setupSwagger from "./config/swagger.js";
+import mainRoute from "./routes/index.js";
 
 
 let PORT = 3000;
@@ -10,7 +11,7 @@ let app = express();
 app.use(express.json());
 
 app.use("/auth", authRouter);
-
+app.use("api", mainRoute);
 
 setupSwagger(app);
 

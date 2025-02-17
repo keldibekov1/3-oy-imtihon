@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import database from "../config/db.js";
-
+import UquvMarkaz from "./uquvMarkaz.model.js"
+import User from "./user.model.js";
 const UserLikes = database.define("UserLikes", {
   id: {
     type: DataTypes.BIGINT,
@@ -10,14 +11,14 @@ const UserLikes = database.define("UserLikes", {
   userId: {
     type: DataTypes.BIGINT,
     references: {
-      model: "User",
+      model: User,
       key: "id",
     },
   },
   oquvmarkazId: {
     type: DataTypes.BIGINT,
     references: {
-      model: "OquvMarkaz",
+      model: UquvMarkaz,
       key: "id",
     },
   },

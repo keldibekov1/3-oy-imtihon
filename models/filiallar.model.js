@@ -1,5 +1,6 @@
 import database from "../config/db.js"
 import { DataTypes } from "sequelize";
+import OquvMarkaz from "./uquvMarkaz.model.js";
 
 const Filial = database.define("Filial", {
   id: {
@@ -30,7 +31,7 @@ const Filial = database.define("Filial", {
   oquvmarkazId: {
     type: DataTypes.BIGINT,
     references: {
-      model: "OquvMarkaz",
+      model: OquvMarkaz,
       key: "id",
     },
   },

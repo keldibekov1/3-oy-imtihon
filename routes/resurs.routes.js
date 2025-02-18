@@ -55,15 +55,81 @@ router.post("/resurslar", createResurs);
  * @swagger
  * /resurslar:
  *   get:
- *     summary: Barcha resurslarni olish
+ *     summary: "Barcha resurslarni olish"
  *     tags: [Resurslar]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         description: "Sahifa raqami"
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: size
+ *         description: "Har bir sahifada ko‘rsatiladigan resurslar soni"
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: sortBy
+ *         description: "Resurslarni qaysi maydonga qarab tartiblash"
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [name, category, createdAt]
+ *           default: "createdAt"
+ *       - in: query
+ *         name: filter
+ *         description: "Resurslarni nomi yoki kategoriyasi bo‘yicha filtrlash"
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: Resurslar ro‘yxati
+ *         description: "Barcha resurslar ro‘yxati"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Success"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       category:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       createdAt:
+ *                         type: string
+ *                       updatedAt:
+ *                         type: string
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     totalItems:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     currentPage:
+ *                       type: integer
+ *                     pageSize:
+ *                       type: integer
  *       500:
- *         description: Server xatosi
+ *         description: "Server xatosi"
  */
 router.get("/resurslar", getAllResurs);
+
 
 /**
  * @swagger

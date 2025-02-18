@@ -16,14 +16,77 @@ const router = Router();
  *   get:
  *     tags: [Yonalish]
  *     summary: Get all Yonalish
- *     description: Fetch all Yonalish records
+ *     description: Fetch all Yonalish records with pagination, sorting, and filtering options
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         description: The page number for pagination
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: size
+ *         description: The number of items per page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: sortBy
+ *         description: Field to sort by
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [name, createdAt]
+ *           default: "createdAt"
+ *       - in: query
+ *         name: filter
+ *         description: Apply filter on Yonalish records (e.g., filter by name or region)
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: A list of all Yonalish
+ *         description: A list of all Yonalish records with pagination
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Success"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       region:
+ *                         type: string
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     totalItems:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     currentPage:
+ *                       type: integer
+ *                     pageSize:
+ *                       type: integer
  *       500:
  *         description: Internal server error
  */
 router.get("/yonalish", findAll);
+
 
 /**
  * @swagger

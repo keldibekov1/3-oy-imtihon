@@ -24,13 +24,79 @@ const router = express.Router();
  *     summary: "Barcha filiallarni olish"
  *     tags:
  *       - "Filial"
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         description: "Sahifa raqami"
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: size
+ *         description: "Har bir sahifada ko‘rsatiladigan filiallar soni"
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: sortBy
+ *         description: "Filiallarni qaysi maydonga qarab tartiblash"
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [name, region, createdAt]
+ *           default: "name"
+ *       - in: query
+ *         name: filter
+ *         description: "Filial nomi yoki joylashuvi bo‘yicha qidirish"
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       "200":
  *         description: "Barcha filiallar ro‘yxati"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Success"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       region:
+ *                         type: string
+ *                       address:
+ *                         type: string
+ *                       createdAt:
+ *                         type: string
+ *                       updatedAt:
+ *                         type: string
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     totalItems:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     currentPage:
+ *                       type: integer
+ *                     pageSize:
+ *                       type: integer
  *       "500":
  *         description: "Server xatosi"
  */
 router.get("/filial", getAllFiliallar);
+
 
 /**
  * @swagger

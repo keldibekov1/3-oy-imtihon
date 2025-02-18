@@ -1,33 +1,46 @@
 import UquvMarkaz from "../models/uquvMarkaz.model.js";
+import { Op } from "sequelize";
 
 async function findAll(req, res) {
     try {
-
-        const { page = 1, size = 10 } = req.query;
+        const { page = 1, size = 10, sortBy = 'createdAt', filter } = req.query;
         const limit = parseInt(size);
         const offset = (parseInt(page) - 1) * limit;
 
-        let { rows, count } = await UquvMarkaz.findAndCountAll(
-            {limit,
-            offset,}
-        );
-        const totalItems = count;  
+        let queryOptions = {
+            limit,
+            offset,
+            order: [[sortBy, 'ASC']],
+        };
+
+        if (filter) {
+            queryOptions.where = {
+                [Op.or]: [
+                    { name: { [Op.like]: `%${filter}%` } },
+                    { region: { [Op.like]: `%${filter}%` } },
+                ],
+            };
+        }
+
+        const { rows, count } = await UquvMarkaz.findAndCountAll(queryOptions);
+        const totalItems = count;
         const totalPages = Math.ceil(totalItems / limit);
 
         res.status(200).send({
             message: "Success",
-            data: rows,  
+            data: rows,
             pagination: {
-              totalItems,
-              totalPages,
-              currentPage: parseInt(page),
-              pageSize: limit,
+                totalItems,
+                totalPages,
+                currentPage: parseInt(page),
+                pageSize: limit,
             },
-          });
+        });
     } catch (error) {
         res.status(500).send({ message: error.message });
     }
-};
+}
+
 
 async function findOne(req, res) {
     try {

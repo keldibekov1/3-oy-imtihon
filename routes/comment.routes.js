@@ -24,13 +24,67 @@ const router = express.Router();
  *     summary: "Barcha commentlarni olish"
  *     tags:
  *       - "Comments"
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         description: "Sahifa raqami"
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: size
+ *         description: "Har bir sahifada ko‘rsatiladigan commentlar soni"
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
  *     responses:
  *       "200":
  *         description: "Barcha commentlar ro‘yxati"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Success"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       userId:
+ *                         type: integer
+ *                       oquvmarkazId:
+ *                         type: integer
+ *                       star:
+ *                         type: number
+ *                       desc:
+ *                         type: string
+ *                       createdAt:
+ *                         type: string
+ *                       updatedAt:
+ *                         type: string
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     totalItems:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     currentPage:
+ *                       type: integer
+ *                     pageSize:
+ *                       type: integer
  *       "500":
  *         description: "Server xatosi"
  */
 router.get("/comments", getAllComments);
+
 
 /**
  * @swagger

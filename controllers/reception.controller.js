@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import Reception from "../models/reception.model.js";
 import User from "../models/user.model.js";
 import OquvMarkaz from "../models/uquvMarkaz.model.js";
@@ -22,26 +23,45 @@ export const addReception = async (req, res) => {
 };
 
 // Barcha yozilgan foydalanuvchilarni olish
+
 export const getAllReceptions = async (req, res) => {
   try {
-    const { page = 1, size = 10 } = req.query;
+    const { page = 1, size = 10, sortBy = 'createdAt', filter } = req.query;
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
 
-    const { rows, count } = await Reception.findAndCountAll({
+    const queryOptions = {
       include: [
         { model: User, attributes: ["id", "name", "email"] },
-        { model: OquvMarkaz, attributes: ["id", "name"] }
+        { model: OquvMarkaz, attributes: ["id", "name"] },
       ],
       limit,
       offset,
-    });
-    const totalItems = count;  
+    };
+
+    // Apply filter if provided (e.g., filter by user or course)
+    if (filter) {
+      queryOptions.where = {
+        [Op.or]: [
+          { "$user.name$": { [Op.like]: `%${filter}%` } },
+          { "$oquvmarkaz.name$": { [Op.like]: `%${filter}%` } },
+        ],
+      };
+    }
+
+    // Apply sorting based on the 'sortBy' parameter
+    if (sortBy) {
+      queryOptions.order = [[sortBy, 'ASC']];
+    }
+
+    const { rows, count } = await Reception.findAndCountAll(queryOptions);
+
+    const totalItems = count;
     const totalPages = Math.ceil(totalItems / limit);
 
-    res.json({
+    return res.status(200).json({
       message: "Success",
-      data: rows,  
+      data: rows,
       pagination: {
         totalItems,
         totalPages,
@@ -50,9 +70,11 @@ export const getAllReceptions = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
+
 
 // Bitta foydalanuvchining kursga yozilganligini ko'rish
 export const getReceptionById = async (req, res) => {

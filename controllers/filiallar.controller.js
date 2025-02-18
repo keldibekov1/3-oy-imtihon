@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import Filial  from "../models/filiallar.model.js"; // Filial va OquvMarkaz modellari import qilinadi
 import OquvMarkaz from "../models/uquvMarkaz.model.js"
 // Filial yaratish
@@ -30,35 +31,57 @@ const createFilial = async (req, res) => {
 };
 
 // Barcha filiallarni olish
+
 const getAllFiliallar = async (req, res) => {
   try {
-    const { page = 1, size = 10 } = req.query;
+    const { page = 1, size = 10, sort = 'name', filter } = req.query;
+
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
 
-    const { rows, count } = await Filial.findAndCountAll({
-      include: [OquvMarkaz], 
+    // Default query options for pagination and inclusion
+    const queryOptions = {
+      include: [OquvMarkaz],
       limit,
       offset,
-    });
-    const totalItems = count;  
+    };
+
+    // Apply filter if provided
+    if (filter) {
+      queryOptions.where = {
+        region: { [Op.like]: `%${filter}%` },
+      };
+    }
+
+    // Apply sorting if provided
+    if (sort) {
+      queryOptions.order = [[sort, 'ASC']];
+    }
+
+    // Fetching the data from the database
+    const { rows, count } = await Filial.findAndCountAll(queryOptions);
+
+    // Calculate pagination details
+    const totalItems = count;
     const totalPages = Math.ceil(totalItems / limit);
 
+    // Return success response with pagination
     return res.status(200).json({
       message: "Success",
-      data: rows,  
+      data: rows,
       pagination: {
         totalItems,
         totalPages,
         currentPage: parseInt(page),
         pageSize: limit,
       },
-    }); 
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
+
 
 // Filialni yangilash
 const updateFilial = async (req, res) => {

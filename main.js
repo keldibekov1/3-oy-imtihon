@@ -12,10 +12,7 @@ import filialRoute from "./routes/filial.routes.js"
 import userLikeRoute from "./routes/userLikes.routes.js"
 import yunalishRoute from "./routes/yunalish.routes.js"
 import excelRoute from "./routes/excel.routes.js"
-
-
-
-
+import MulterRoute from "./routes/upload.routes.js";
 
 let PORT = 3000;
 let app = express();
@@ -33,13 +30,14 @@ app.use("/",filialRoute)
 app.use("/",userLikeRoute)
 app.use("/", yunalishRoute)
 app.use("/", excelRoute)
+app.use("/", MulterRoute)
 
 setupSwagger(app);
 
 async function bootstaprt() {
   try {
     await database.sync(
-     { force: true }
+    //  { force: true }
       
     );
     console.log("Connect to db");

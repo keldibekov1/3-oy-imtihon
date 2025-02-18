@@ -1,4 +1,6 @@
 import ResursCategory from "../models/resursCategory.model.js";
+import { Op } from "sequelize";
+
 import Resurs from "../models/resurs.model.js";
 
 // ✅ Kategoriya yaratish
@@ -15,20 +17,35 @@ export const createCategory = async (req, res) => {
 // ✅ Barcha kategoriyalarni olish
 export const getAllCategories = async (req, res) => {
   try {
-    const { page = 1, size = 10 } = req.query;
+    const { page = 1, size = 10, sortBy = 'createdAt', filter } = req.query;
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
 
-    const { rows, count } = await ResursCategory.findAndCountAll(
-      {limit,
-      offset,}
-    );
-    const totalItems = count;  
+    const queryOptions = {
+      limit,
+      offset,
+    };
+
+    // Apply filter if provided (filter by name)
+    if (filter) {
+      queryOptions.where = {
+        name: { [Op.like]: `%${filter}%` }
+      };
+    }
+
+    // Apply sorting based on the 'sortBy' parameter
+    if (sortBy) {
+      queryOptions.order = [[sortBy, 'ASC']];
+    }
+
+    const { rows, count } = await ResursCategory.findAndCountAll(queryOptions);
+
+    const totalItems = count;
     const totalPages = Math.ceil(totalItems / limit);
 
-    res.json({
+    return res.status(200).json({
       message: "Success",
-      data: rows,  
+      data: rows,
       pagination: {
         totalItems,
         totalPages,
@@ -37,7 +54,8 @@ export const getAllCategories = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
 

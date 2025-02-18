@@ -45,15 +45,95 @@ router.post("/receptions", addReception);
  * /receptions:
  *   get:
  *     tags: [Reception]
- *     summary: Get all receptions
- *     description: Fetch all receptions with user and course details
+ *     summary: "Get all receptions"
+ *     description: "Fetch all receptions with user and course details"
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         description: "Page number"
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: size
+ *         description: "Number of receptions per page"
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: sortBy
+ *         description: "Sort receptions by a specific field"
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [userId, oquvmarkazId, createdAt]
+ *           default: "createdAt"
+ *       - in: query
+ *         name: filter
+ *         description: "Filter receptions by user or course details"
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: A list of all receptions
+ *         description: "A list of all receptions"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Success"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       userId:
+ *                         type: integer
+ *                       oquvmarkazId:
+ *                         type: integer
+ *                       createdAt:
+ *                         type: string
+ *                       updatedAt:
+ *                         type: string
+ *                       user:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                           email:
+ *                             type: string
+ *                       oquvmarkaz:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     totalItems:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     currentPage:
+ *                       type: integer
+ *                     pageSize:
+ *                       type: integer
  *       500:
- *         description: Internal server error
+ *         description: "Internal server error"
  */
 router.get("/receptions", getAllReceptions);
+
 
 /**
  * @swagger

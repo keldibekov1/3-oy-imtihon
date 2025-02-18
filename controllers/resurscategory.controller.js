@@ -15,8 +15,27 @@ export const createCategory = async (req, res) => {
 // ✅ Barcha kategoriyalarni olish
 export const getAllCategories = async (req, res) => {
   try {
-    const categories = await ResursCategory.findAll();
-    res.json(categories);
+    const { page = 1, size = 10 } = req.query;
+    const limit = parseInt(size);
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { rows, count } = await ResursCategory.findAndCountAll(
+      {limit,
+      offset,}
+    );
+    const totalItems = count;  
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res.json({
+      message: "Success",
+      data: rows,  
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: parseInt(page),
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -32,11 +32,28 @@ const createFilial = async (req, res) => {
 // Barcha filiallarni olish
 const getAllFiliallar = async (req, res) => {
   try {
-    const filiallar = await Filial.findAll({
-      include: [OquvMarkaz], // Filial va uning tegishli O‘quv Markazi bilan birga olish
-    });
+    const { page = 1, size = 10 } = req.query;
+    const limit = parseInt(size);
+    const offset = (parseInt(page) - 1) * limit;
 
-    return res.status(200).json(filiallar); // Filiallar ro‘yxatini qaytarish
+    const { rows, count } = await Filial.findAndCountAll({
+      include: [OquvMarkaz], 
+      limit,
+      offset,
+    });
+    const totalItems = count;  
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return res.status(200).json({
+      message: "Success",
+      data: rows,  
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: parseInt(page),
+        pageSize: limit,
+      },
+    }); 
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });

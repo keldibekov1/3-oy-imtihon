@@ -57,8 +57,8 @@ const updateFaoliyat = async (req, res) => {
 
     return res.status(200).json(faoliyat); // Yangilangan faoliyatni qaytarish
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
+    console.error(error.message);
+    return res.status(500).json({ message: error.message});
   }
 };
 
@@ -89,3 +89,5 @@ export {
   updateFaoliyat,
   deleteFaoliyat,
 };
+Filial.belongsTo(Faoliyat);
+Faoliyat.hasMany(Filial);

@@ -28,5 +28,6 @@ const Faoliyat = database.define("Faoliyat", {
     },
   });
   
-
+  Filial.belongsTo(Faoliyat);
+  Faoliyat.hasMany(Filial);
   export default Faoliyat;

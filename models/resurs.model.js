@@ -8,7 +8,7 @@ const Resurs = database.define("Resurs", {
     autoIncrement: true,
     primaryKey: true,
   },
-  nomi: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
@@ -46,5 +46,11 @@ const Resurs = database.define("Resurs", {
     },
   },
 });
+
+ResursCategory.hasMany(Resurs, { foreignKey: "resursCategoryId" });
+Resurs.belongsTo(ResursCategory, { foreignKey: "resursCategoryId" });
+
+User.hasMany(Resurs, { foreignKey: "createdBy" });
+Resurs.belongsTo(User, { foreignKey: "createdBy" });
 
 export default Resurs;

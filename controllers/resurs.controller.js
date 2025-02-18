@@ -4,14 +4,14 @@ import ResursCategory from "../models/resursCategory.model.js";
 // ✅ Resurs yaratish
 export const createResurs = async (req, res) => {
     try {
-      const { nomi, media, description, photo, createdBy, resursCategoryId } = req.body; // nomi o‘rniga nomi ishlatildi
+      const { name, media, description, photo, createdBy, resursCategoryId } = req.body; // name o‘rniga name ishlatildi
   
       const category = await ResursCategory.findByPk(resursCategoryId);
       if (!category) {
         return res.status(404).json({ message: "Kategoriya topilmadi" });
       }
   
-      const newResurs = await Resurs.create({ nomi, media, description, photo, createdBy, resursCategoryId }); // nomi emas, nomi ishlatilishi kerak!
+      const newResurs = await Resurs.create({ name, media, description, photo, createdBy, resursCategoryId }); // name emas, name ishlatilishi kerak!
       
       res.status(201).json(newResurs);
     } catch (error) {
@@ -24,7 +24,7 @@ export const createResurs = async (req, res) => {
 export const getAllResurs = async (req, res) => {
   try {
     const resurslar = await Resurs.findAll({
-      include: [{ model: ResursCategory, as: "category" }],
+      include: [{ model: ResursCategory,attributes: ["name"] }],
     });
     res.json(resurslar);
   } catch (error) {
@@ -36,7 +36,7 @@ export const getAllResurs = async (req, res) => {
 export const getResursById = async (req, res) => {
   try {
     const resurs = await Resurs.findByPk(req.params.id, {
-      include: [{ model: ResursCategory, as: "category" }],
+      include: [{ model: ResursCategory, attributes: ["name"] }],
     });
 
     if (!resurs) {
@@ -52,14 +52,14 @@ export const getResursById = async (req, res) => {
 // ✅ Resursni yangilash
 export const updateResurs = async (req, res) => {
   try {
-    const { nomi, media, description, photo, resursCategoryId } = req.body;
+    const { name, media, description, photo, resursCategoryId } = req.body;
     const resurs = await Resurs.findByPk(req.params.id);
 
     if (!resurs) {
       return res.status(404).json({ message: "Resurs topilmadi" });
     }
 
-    resurs.nomi = nomi || resurs.nomi;
+    resurs.name = name || resurs.name;
     resurs.media = media || resurs.media;
     resurs.description = description || resurs.description;
     resurs.photo = photo || resurs.photo;

@@ -26,7 +26,7 @@ export const getAllCategories = async (req, res) => {
 export const getCategoryById = async (req, res) => {
   try {
     const category = await ResursCategory.findByPk(req.params.id, {
-      include: [{ model: Resurs, as: "resurslar" }],
+      include: [{ model: Resurs, attributes: ["name"]}],
     });
 
     if (!category) {

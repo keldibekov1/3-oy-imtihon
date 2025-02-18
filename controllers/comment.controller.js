@@ -23,7 +23,7 @@ const createComment = async (req, res) => {
       desc,
     });
 
-    return res.status(201).json(newComment); // Yangi commentni qaytarish
+    return res.status(201).json(newComment); 
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Serverda xatolik yuz berdi: ${error.message}` });
@@ -34,7 +34,10 @@ const createComment = async (req, res) => {
 const getAllComments = async (req, res) => {
   try {
     const comments = await Comment.findAll({
-      include: [User, OquvMarkaz], // Foydalanuvchi va o‘quv markazi bilan birga olish
+      include: [
+        { model: User, attributes: ["id", "name", "email"] },
+        { model: OquvMarkaz, attributes: ["id", "name"] }
+      ] 
     });
 
     return res.status(200).json(comments);
@@ -95,3 +98,6 @@ export {
     updateComment,
     deleteComment,
 };
+
+Comment.belongsTo(User, { foreignKey: "userId" });
+Comment.belongsTo(OquvMarkaz, { foreignKey: "oquvmarkazId" });

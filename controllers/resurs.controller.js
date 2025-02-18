@@ -5,21 +5,30 @@ import ResursCategory from "../models/resursCategory.model.js";
 
 // ✅ Resurs yaratish
 export const createResurs = async (req, res) => {
-    try {
-      const { name, media, description, photo, createdBy, resursCategoryId } = req.body; // name o‘rniga name ishlatildi
-  
+  try {
+      if (!req.user || !req.user.id) {
+          return res.status(401).json({ message: "Avtorizatsiya talab qilinadi" });
+      }
+
+      const { name, media, description, photo, resursCategoryId } = req.body;
+      const createdBy = req.user.id; // JWT dan foydalanuvchi ID ni olish
+
+      // Kategoriya mavjudligini tekshirish
       const category = await ResursCategory.findByPk(resursCategoryId);
       if (!category) {
-        return res.status(404).json({ message: "Kategoriya topilmadi" });
+          return res.status(404).json({ message: "Kategoriya topilmadi" });
       }
-  
-      const newResurs = await Resurs.create({ name, media, description, photo, createdBy, resursCategoryId }); // name emas, name ishlatilishi kerak!
-      
-      res.status(201).json(newResurs);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
+
+      // Yangi resurs yaratish
+      const newResurs = await Resurs.create({ name, media, description, photo, createdBy, resursCategoryId });
+
+      res.status(201).json({ message: "Resurs muvaffaqiyatli yaratildi", data: newResurs });
+  } catch (error) {
+      console.error("Server xatosi:", error);
+      res.status(500).json({ message: "Serverda xatolik yuz berdi: " + error.message });
+  }
+};
+
   
 
 // ✅ Barcha resurslarni olish

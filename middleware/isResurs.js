@@ -6,7 +6,7 @@ const isResurs = async (req, res, next) => {
     const { id } = req.params; // Resurs ID
     const userId = req.user.id; // Token orqali olingan foydalanuvchi ID (req.user shartli bo'lishi kerak)
 
-    const resurs = await Resurs.findByPk(id);
+    const resurs = await Resurs.findByPk(id);    
 
     if (!resurs) {
       return res.status(404).json({ message: "Resurs topilmadi" });

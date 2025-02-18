@@ -7,15 +7,17 @@ const createComment = async (req, res) => {
   try {
     const { userId, oquvmarkazId, star, desc } = req.body;
 
-    // Foydalanuvchi va o‘quv markazi mavjudligini tekshirish
     const user = await User.findByPk(userId);
     const oquvmarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
 
-    if (!user || !oquvmarkaz) {
-      return res.status(404).json({ message: "Foydalanuvchi yoki o‘quv markazi topilmadi." });
+    if (!user) {
+      return res.status(404).json({ message: "Foydalanuvchi topilmadi." });
     }
 
-    // Yangi comment yaratish
+    if (!oquvmarkaz) {
+      return res.status(404).json({ message: "O‘quv markazi topilmadi." });
+    }
+
     const newComment = await Comment.create({
       userId,
       oquvmarkazId,
@@ -77,13 +79,12 @@ const updateComment = async (req, res) => {
       return res.status(404).json({ message: "Comment topilmadi." });
     }
 
-    // Commentni yangilash
-    comment.star = star || comment.star;
-    comment.desc = desc || comment.desc;
+    comment.star = star !== undefined ? star : comment.star;
+    comment.desc = desc !== undefined ? desc : comment.desc;
 
-    await comment.save(); // O‘zgarishlarni saqlash
+    await comment.save();
 
-    return res.status(200).json(comment); // Yangilangan commentni qaytarish
+    return res.status(200).json(comment);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Serverda xatolik yuz berdi: ${error.message}` });
@@ -101,10 +102,9 @@ const deleteComment = async (req, res) => {
       return res.status(404).json({ message: "Comment topilmadi." });
     }
 
-    // Commentni o‘chirish
     await comment.destroy();
 
-    return res.status(204).json(); // Muvaffaqiyatli o‘chirilganini bildirish
+    return res.status(200).json({ message: "Comment muvaffaqiyatli o'chirildi." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Serverda xatolik yuz berdi: ${error.message}` });

@@ -1,5 +1,7 @@
 import express from "express";
 import { findAll, findOne, create, update, remove } from "../controllers/uquvMarkaz.controller.js";
+import isSeoOwner from "../middleware/isSeoOwner.js";
+import verifyToken from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
@@ -208,6 +210,6 @@ router.put("/oquvmarkaz/:id", update);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/oquvmarkaz/:id", remove);
+router.delete("/oquvmarkaz/:id",verifyToken, isSeoOwner, remove);
 
 export default router;

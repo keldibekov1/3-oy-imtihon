@@ -5,27 +5,27 @@ import User from "../models/user.model.js";
 // Comment yaratish
 const createComment = async (req, res) => {
   try {
-    const { userId, oquvmarkazId, star, desc } = req.body;
-
-    const user = await User.findByPk(userId);
-    const oquvmarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
-
-    if (!user) {
-      return res.status(404).json({ message: "Foydalanuvchi topilmadi." });
+    // JWT token orqali userId ni olish
+    const userId = req.user.id; // req.user ni olish
+    if (!userId) {
+      return res.status(401).json({ message: "Foydalanuvchi ID topilmadi. Iltimos, avtorizatsiya qiling." });
     }
 
+    const { oquvmarkazId, star, desc } = req.body;
+
+    const oquvmarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
     if (!oquvmarkaz) {
       return res.status(404).json({ message: "O‘quv markazi topilmadi." });
     }
 
     const newComment = await Comment.create({
-      userId,
+      userId,  // userId ni qo'shish
       oquvmarkazId,
       star,
       desc,
     });
 
-    return res.status(201).json(newComment); 
+    return res.status(201).json(newComment);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Serverda xatolik yuz berdi: ${error.message}` });

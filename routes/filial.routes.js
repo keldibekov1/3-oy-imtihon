@@ -5,6 +5,8 @@ import {
   updateFilial,
   deleteFilial,
 } from "../controllers/filiallar.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import isSeo from "../middleware/isSeo.js";
 
 const router = express.Router();
 
@@ -70,7 +72,7 @@ router.get("/filial", getAllFiliallar);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/filial", createFilial);
+router.post("/filial", verifyToken, isSeo, createFilial);
 
 /**
  * @swagger
@@ -118,7 +120,7 @@ router.post("/filial", createFilial);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/filial/:id", updateFilial);
+router.put("/filial/:id",verifyToken, isSeo, updateFilial);
 
 /**
  * @swagger
@@ -141,6 +143,6 @@ router.put("/filial/:id", updateFilial);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/filial/:id", deleteFilial);
+router.delete("/filial/:id",verifyToken, isSeo, deleteFilial);
 
 export default router;

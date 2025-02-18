@@ -5,6 +5,8 @@ import {
   updateComment,
   deleteComment,
 } from "../controllers/comment.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import selfComment from "../middleware/isComment.js";
 
 const router = express.Router();
 
@@ -64,7 +66,7 @@ router.get("/comments", getAllComments);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/comments", createComment);
+router.post("/comments", verifyToken,createComment);
 
 /**
  * @swagger
@@ -100,7 +102,7 @@ router.post("/comments", createComment);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/comments/:id", updateComment);
+router.put("/comments/:id",selfComment, updateComment);
 
 /**
  * @swagger
@@ -123,6 +125,6 @@ router.put("/comments/:id", updateComment);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/comments/:id", deleteComment);
+router.delete("/comments/:id", verifyToken,selfComment, deleteComment);
 
 export default router;

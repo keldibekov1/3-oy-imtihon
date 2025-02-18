@@ -6,6 +6,8 @@ import {
   updateResurs,
   deleteResurs,
 } from "../controllers/resurs.controller.js";
+import isResurs from "../middleware/isResurs.js";
+import verifyToken from "../middleware/verifyToken.js";
 
 const router = Router();
 
@@ -144,6 +146,6 @@ router.put("/resurslar/:id", updateResurs);
  *       500:
  *         description: Server xatosi
  */
-router.delete("/resurslar/:id", deleteResurs);
+router.delete("/resurslar/:id", verifyToken, isResurs,deleteResurs);
 
 export default router;

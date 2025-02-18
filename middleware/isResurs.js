@@ -14,7 +14,7 @@ const isResurs = async (req, res, next) => {
 
     // Resursni faqat o'zini yaratgan foydalanuvchi yoki admin o'chirishi mumkin
     if (resurs.createdBy !== userId && req.user.type !== "admin") {
-      return res.status(403).json({ message: "Siz bu resursni o'chira olmaysiz" });
+      return res.status(403).json({ message: "Siz bu bunday huquq yoq" });
     }
 
     // Middleware orqali keyingi funksiyaga o'tish

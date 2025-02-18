@@ -67,19 +67,26 @@ async function findOne(req, res) {
 
 async function create(req, res) {
     try {
-        const { userId, oquvmarkazId } = req.body; 
-        if (!userId || !oquvmarkazId) {
-            return res.status(400).send({ message: "userId and oquvmarkazId are required" });
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: "Avtorizatsiya talab qilinadi" });
+        }
+
+        const userId = req.user.id; // ✅ JWT token ichidan user ID olish
+        const { oquvmarkazId } = req.body; 
+
+        if (!oquvmarkazId) {
+            return res.status(400).json({ message: "oquvmarkazId talab qilinadi" });
         }
 
         const newLike = await UserLikes.create({ userId, oquvmarkazId }); 
-        res.status(201).send({ message: newLike });
+        res.status(201).json({ message: "Like muvaffaqiyatli qo‘shildi", data: newLike });
         
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send({message:error.message});
+        console.error("Xatolik:", error);
+        res.status(500).json({ message: "Serverda xatolik yuz berdi: " + error.message });
     }
 };
+
 
 async function update(req, res) {
     try {

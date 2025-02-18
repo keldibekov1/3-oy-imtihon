@@ -15,8 +15,7 @@ async function findAll(req, res) {
         if (filter) {
             queryOptions.where = {
                 [Op.or]: [
-                    { name: { [Op.like]: `%${filter}%` } },
-                    { region: { [Op.like]: `%${filter}%` } }
+                    { name: { [Op.like]: `%${filter}%` } }
                 ]
             };
         }

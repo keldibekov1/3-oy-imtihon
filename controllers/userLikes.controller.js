@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 
 async function findAll(req, res) {
     try {
-        const { page = 1, size = 10, sortBy = 'createdAt', filter } = req.query;
+        const { page = 1, size = 10, sortBy, filter } = req.query;
         const limit = parseInt(size);
         const offset = (parseInt(page) - 1) * limit;
 
@@ -13,13 +13,21 @@ async function findAll(req, res) {
             order: [[sortBy, 'ASC']],
         };
 
-        if (filter) {
+        if (filter&&sortBy == "oquvmarkazId") {
             queryOptions.where = {
-                [Op.or]: [
-                    { userId: { [Op.like]: `%${filter}%` } },
+                [Op.and]: [
                     { oquvmarkazId: { [Op.like]: `%${filter}%` } },
                 ],
             };
+        
+        }
+        if (filter&&sortBy == "userId") {
+            queryOptions.where = {
+                [Op.and]: [
+                    { userId: { [Op.like]: `%${filter}%` } },
+                ],
+            };
+            
         }
 
         const { rows, count } = await UserLikes.findAndCountAll(queryOptions);

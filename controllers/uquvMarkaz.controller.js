@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 
 async function findAll(req, res) {
     try {
-        const { page = 1, size = 10, sortBy = 'createdAt', filter } = req.query;
+        const { page = 1, size = 10, sortBy = 'name', filter } = req.query;
         const limit = parseInt(size);
         const offset = (parseInt(page) - 1) * limit;
 
@@ -13,13 +13,16 @@ async function findAll(req, res) {
             order: [[sortBy, 'ASC']],
         };
 
-        if (filter) {
-            queryOptions.where = {
-                [Op.or]: [
-                    { name: { [Op.like]: `%${filter}%` } },
-                    { region: { [Op.like]: `%${filter}%` } },
-                ],
-            };
+        if (filter && sortBy) {
+            queryOptions.where = {};
+        
+            if (sortBy === "name") {
+                queryOptions.where.name = { [Op.like]: `%${filter}%` };
+            }
+        
+            if (sortBy === "region") {
+                queryOptions.where.region = { [Op.like]: `%${filter}%` };
+            }
         }
 
         const { rows, count } = await UquvMarkaz.findAndCountAll(queryOptions);

@@ -34,7 +34,7 @@ const createFilial = async (req, res) => {
 
 const getAllFiliallar = async (req, res) => {
   try {
-    const { page = 1, size = 10, sort = 'name', filter } = req.query;
+    const { page = 1, size = 10, sortBy = 'name', filter } = req.query;
 
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
@@ -47,11 +47,17 @@ const getAllFiliallar = async (req, res) => {
     };
 
     // Apply filter if provided
-    if (filter) {
-      queryOptions.where = {
-        region: { [Op.like]: `%${filter}%` },
-      };
-    }
+    if (filter && sortBy) {
+      queryOptions.where = {};
+  
+      if (sortBy === "name") {
+          queryOptions.where.name = { [Op.like]: `%${filter}%` };
+      }
+  
+      if (sortBy === "region") {
+          queryOptions.where.region = { [Op.like]: `%${filter}%` };
+      }
+  }
 
     // Apply sorting if provided
     if (sort) {

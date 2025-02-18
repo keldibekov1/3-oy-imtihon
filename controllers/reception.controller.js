@@ -39,15 +39,22 @@ export const getAllReceptions = async (req, res) => {
       offset,
     };
 
-    // Apply filter if provided (e.g., filter by user or course)
-    if (filter) {
+    if (filter&&sortBy == "oquvmarkazId") {
       queryOptions.where = {
-        [Op.or]: [
-          { "$user.name$": { [Op.like]: `%${filter}%` } },
-          { "$oquvmarkaz.name$": { [Op.like]: `%${filter}%` } },
-        ],
+          [Op.and]: [
+              { oquvmarkazId: { [Op.like]: `%${filter}%` } },
+          ],
       };
-    }
+  
+  }
+  if (filter&&sortBy == "userId") {
+      queryOptions.where = {
+          [Op.and]: [
+              { userId: { [Op.like]: `%${filter}%` } },
+          ],
+      };
+      
+  }
 
     // Apply sorting based on the 'sortBy' parameter
     if (sortBy) {

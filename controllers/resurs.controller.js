@@ -38,14 +38,17 @@ export const getAllResurs = async (req, res) => {
     };
 
     // Apply filter if provided (filter by name or category)
-    if (filter) {
-      queryOptions.where = {
-        [Op.or]: [
-          { name: { [Op.like]: `%${filter}%` } },
-          { category: { [Op.like]: `%${filter}%` } }
-        ],
-      };
-    }
+    if (filter && sortBy) {
+      queryOptions.where = {};
+  
+      if (sortBy === "name") {
+          queryOptions.where.name = { [Op.like]: `%${filter}%` };
+      }
+  
+      if (sortBy === "category") {
+          queryOptions.where.category = { [Op.like]: `%${filter}%` };
+      }
+  }
 
     // Apply sorting based on the 'sortBy' parameter
     if (sortBy) {

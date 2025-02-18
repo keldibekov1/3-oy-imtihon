@@ -100,9 +100,6 @@ router.get("/comments", getAllComments);
  *           schema:
  *             type: object
  *             properties:
- *               userId:
- *                 type: integer
- *                 example: 1
  *               oquvmarkazId:
  *                 type: integer
  *                 example: 2

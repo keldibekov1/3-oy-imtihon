@@ -2,8 +2,27 @@ import UserLikes from "../models/userLikes.model.js";
 
 async function findAll(req, res) {
     try {
-        let likes = await UserLikes.findAll();
-        res.status(200).send({message:likes});
+        const { page = 1, size = 10 } = req.query;
+        const limit = parseInt(size);
+        const offset = (parseInt(page) - 1) * limit;
+
+        let { rows, count } = await UserLikes.findAndCountAll({
+            limit,
+            offset,
+        });
+        const totalItems = count;  
+        const totalPages = Math.ceil(totalItems / limit);
+        
+        res.status(200).send({
+            message: "Success",
+            data: rows,  
+            pagination: {
+              totalItems,
+              totalPages,
+              currentPage: parseInt(page),
+              pageSize: limit,
+            },
+          });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({message:error.message});

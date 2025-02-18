@@ -23,12 +23,28 @@ const createFaoliyat = async (req, res) => {
 // Barcha faoliyatlarni olish
 const getAllFaoliyat = async (req, res) => {
   try {
-    const faoliyatlar = await Faoliyat.findAll({
-      // Faoliyatlar bilan bog‘liq filial ma’lumotlarini ham olish
-      include: [Filial], // Eslatma: Faoliyat va Filial o‘rtasidagi bog‘lanish `hasMany` bo‘lishi kerak
-    });
+    const { page = 1, size = 10 } = req.query;
+    const limit = parseInt(size);
+    const offset = (parseInt(page) - 1) * limit;
 
-    return res.status(200).json(faoliyatlar);
+    const { rows, count } = await Faoliyat.findAndCountAll({
+      include: [Filial], 
+      limit,
+      offset,
+    });
+    const totalItems = count;  
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return res.status(200).json({
+      message: "Success",
+      data: rows,  
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: parseInt(page),
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });

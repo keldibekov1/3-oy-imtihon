@@ -2,12 +2,32 @@ import UquvMarkaz from "../models/uquvMarkaz.model.js";
 
 async function findAll(req, res) {
     try {
-        let uquvMarkazlar = await UquvMarkaz.findAll();
-        res.status(200).send({ message: uquvMarkazlar });
+
+        const { page = 1, size = 10 } = req.query;
+        const limit = parseInt(size);
+        const offset = (parseInt(page) - 1) * limit;
+
+        let { rows, count } = await UquvMarkaz.findAndCountAll(
+            {limit,
+            offset,}
+        );
+        const totalItems = count;  
+        const totalPages = Math.ceil(totalItems / limit);
+
+        res.status(200).send({
+            message: "Success",
+            data: rows,  
+            pagination: {
+              totalItems,
+              totalPages,
+              currentPage: parseInt(page),
+              pageSize: limit,
+            },
+          });
     } catch (error) {
         res.status(500).send({ message: error.message });
     }
-}
+};
 
 async function findOne(req, res) {
     try {

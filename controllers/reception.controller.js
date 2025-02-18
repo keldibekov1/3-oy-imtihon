@@ -7,7 +7,6 @@ export const addReception = async (req, res) => {
   try {
     const { userId, oquvmarkazId } = req.body;
 
-    // Foydalanuvchi yoki o'quv markazi mavjudligini tekshirish
     const user = await User.findByPk(userId);
     const oquvMarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
 
@@ -25,13 +24,31 @@ export const addReception = async (req, res) => {
 // Barcha yozilgan foydalanuvchilarni olish
 export const getAllReceptions = async (req, res) => {
   try {
-    const receptions = await Reception.findAll({
+    const { page = 1, size = 10 } = req.query;
+    const limit = parseInt(size);
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { rows, count } = await Reception.findAndCountAll({
       include: [
         { model: User, attributes: ["id", "name", "email"] },
         { model: OquvMarkaz, attributes: ["id", "name"] }
-      ]
+      ],
+      limit,
+      offset,
     });
-    res.json(receptions);
+    const totalItems = count;  
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res.json({
+      message: "Success",
+      data: rows,  
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: parseInt(page),
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

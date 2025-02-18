@@ -33,19 +33,38 @@ const createComment = async (req, res) => {
 // Barcha commentlarni olish
 const getAllComments = async (req, res) => {
   try {
-    const comments = await Comment.findAll({
+    const { page = 1, size = 10 } = req.query;
+    const limit = parseInt(size);
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { rows, count } = await Comment.findAndCountAll({
       include: [
         { model: User, attributes: ["id", "name", "email"] },
         { model: OquvMarkaz, attributes: ["id", "name"] }
-      ] 
+      ],
+      limit,
+      offset,
     });
+    
+    const totalItems = count;  
+    const totalPages = Math.ceil(totalItems / limit);
 
-    return res.status(200).json(comments);
+    return res.status(200).json({
+      message: "Success",
+      data: rows,  
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: parseInt(page),
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Serverda xatolik yuz berdi: ${error.message}` });
   }
 };
+
 
 const updateComment = async (req, res) => {
   try {

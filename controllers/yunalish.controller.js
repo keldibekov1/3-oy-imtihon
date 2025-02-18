@@ -2,8 +2,27 @@ import Yonalish from "../models/yunalish.model.js";
 
 async function findAll(req, res) {
     try {
-        let yunalishlar = await Yonalish.findAll();
-        res.status(200).send({message:yunalishlar});
+        const { page = 1, size = 10 } = req.query;
+        const limit = parseInt(size);
+        const offset = (parseInt(page) - 1) * limit;
+
+        let { rows, count } = await Yonalish.findAndCountAll({
+            limit,
+            offset,
+        });
+        const totalItems = count;  
+        const totalPages = Math.ceil(totalItems / limit);
+
+        res.status(200).send({
+        message: "Success",
+        data: rows,  
+        pagination: {
+        totalItems,
+        totalPages,
+        currentPage: parseInt(page),
+        pageSize: limit,
+      },
+    });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({message:error.message});

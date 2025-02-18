@@ -23,10 +23,29 @@ export const createResurs = async (req, res) => {
 // ✅ Barcha resurslarni olish
 export const getAllResurs = async (req, res) => {
   try {
-    const resurslar = await Resurs.findAll({
+    const { page = 1, size = 10 } = req.query;
+    const limit = parseInt(size);
+    const offset = (parseInt(page) - 1) * limit;
+    
+    const { rows, count } = await Resurs.findAndCountAll({
       include: [{ model: ResursCategory,attributes: ["name"] }],
+      limit,
+      offset,
     });
-    res.json(resurslar);
+
+    const totalItems = count;  
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res.json({
+      message: "Success",
+      data: rows,  
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: parseInt(page),
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

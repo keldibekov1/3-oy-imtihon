@@ -2,6 +2,7 @@ import express from "express";
 import { findAll, findOne, create, update, remove } from "../controllers/uquvMarkaz.controller.js";
 import isSeoOwner from "../middleware/isSeoOwner.js";
 import verifyToken from "../middleware/verifyToken.js";
+import isSeo from "../middleware/isSeo.js";
 
 const router = express.Router();
 
@@ -145,7 +146,7 @@ router.get("/oquvmarkaz/:id", findOne);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/oquvmarkaz", create);
+router.post("/oquvmarkaz", verifyToken, isSeo, create);
 
 /**
  * @swagger
@@ -187,7 +188,7 @@ router.post("/oquvmarkaz", create);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/oquvmarkaz/:id", update);
+router.put("/oquvmarkaz/:id", verifyToken, isSeoOwner,update);
 
 /**
  * @swagger

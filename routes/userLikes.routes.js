@@ -1,6 +1,7 @@
 import express from "express";
 import { findAll, findOne, create, update, remove } from "../controllers/userLikes.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
+import checkLikeOwner from "../middleware/checkLikeOwner.js";
 
 const router = express.Router();
 
@@ -130,7 +131,7 @@ router.get("/userlikes/:id", findOne);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/userlikes", verifyToken, create);
+router.post("/userlikes", verifyToken,  create);
 
 /**
  * @swagger
@@ -166,7 +167,7 @@ router.post("/userlikes", verifyToken, create);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/userlikes/:id",verifyToken, update);
+router.put("/userlikes/:id",verifyToken,checkLikeOwner, update);
 
 /**
  * @swagger
@@ -189,7 +190,7 @@ router.put("/userlikes/:id",verifyToken, update);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/userlikes/:id",verifyToken, remove);
+router.delete("/userlikes/:id",verifyToken,checkLikeOwner, remove);
 
 export default router;
 

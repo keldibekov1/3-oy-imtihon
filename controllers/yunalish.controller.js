@@ -67,7 +67,7 @@ async function create(req, res) {
         }
 
         const newYonalish = await Yonalish.create({ name, photo, faoliyatid }); 
-        res.status(201).send({ message: newYonalish, message: "Yonalish created successfully" });
+        res.status(201).send({ message:  "Yonalish created successfully" , newYonalish });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({ message: error.message });
@@ -97,17 +97,19 @@ async function remove(req, res) {
     try {
         const { id } = req.params; 
 
-        const yunalish = await Yonalish.findByPk(id); 
-        if (!yunalish) {
-            return res.status(404).send({ message: "Yonalish not found" });
+        const yonalish = await Yonalish.findByPk(id); 
+        if (!yonalish) {
+            return res.status(404).send({ message: "Yonalish topilmadi" });
         }
 
-        res.status(200).send({ message: "Yonalish deleted successfully" });
+        await yonalish.destroy();
+        res.status(200).send({ message: "Yonalish muvaffaqiyatli o‘chirildi" });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({ message: error.message });
     }
 }
+
 
 
 export{findAll, findOne, create ,update ,remove};

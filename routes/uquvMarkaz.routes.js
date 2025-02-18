@@ -135,9 +135,7 @@ router.get("/oquvmarkaz/:id", findOne);
  *               address:
  *                 type: string
  *                 example: "Toshkent shahar, Chilonzor tumani"
- *               createdBy:
- *                 type: integer
- *                 example: 1
+ *               
  *     responses:
  *       "201":
  *         description: "O'quv markazi muvaffaqiyatli yaratildi"

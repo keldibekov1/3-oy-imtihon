@@ -162,10 +162,10 @@ router.get("/receptions/:id", getReceptionById);
 /**
  * @swagger
  * /receptions/{id}:
- *   put:
+ *   patch:
  *     tags: [Reception]
- *     summary: Update a reception
- *     description: Update the reception (enrollment) of a user by providing userId and oquvmarkazId
+ *     summary: Update a reception (partial update)
+ *     description: Partially update the reception (enrollment) of a user by providing userId and/or oquvmarkazId
  *     parameters:
  *       - in: path
  *         name: id
@@ -182,10 +182,10 @@ router.get("/receptions/:id", getReceptionById);
  *             properties:
  *               userId:
  *                 type: integer
- *                 description: The new user ID
+ *                 description: The new user ID (optional)
  *               oquvmarkazId:
  *                 type: integer
- *                 description: The new course ID
+ *                 description: The new course ID (optional)
  *     responses:
  *       200:
  *         description: Reception updated successfully
@@ -194,7 +194,8 @@ router.get("/receptions/:id", getReceptionById);
  *       500:
  *         description: Internal server error
  */
-router.put("/receptions/:id", updateReception);
+router.patch("/receptions/:id", updateReception);
+
 
 /**
  * @swagger

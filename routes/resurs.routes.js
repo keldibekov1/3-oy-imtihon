@@ -154,7 +154,7 @@ router.get("/resurslar/:id", getResursById);
 /**
  * @swagger
  * /resurslar/{id}:
- *   put:
+ *   patch:
  *     summary: Resursni yangilash
  *     tags: [Resurslar]
  *     parameters:
@@ -188,7 +188,7 @@ router.get("/resurslar/:id", getResursById);
  *       500:
  *         description: Server xatosi
  */
-router.put("/resurslar/:id", verifyToken,isResurs, updateResurs);
+router.patch("/resurslar/:id", verifyToken,isResurs, updateResurs);
 
 /**
  * @swagger

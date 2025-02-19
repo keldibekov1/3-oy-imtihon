@@ -82,7 +82,6 @@ const router = express.Router();
  */
 router.get("/faoliyat", getAllFaoliyat);
 
-
 /**
  * @swagger
  * /faoliyat:
@@ -122,8 +121,8 @@ router.post("/faoliyat",verifyToken, isFaoliyatCreator, createFaoliyat);
 /**
  * @swagger
  * /faoliyat/{id}:
- *   put:
- *     summary: "Faoliyatni yangilash"
+ *   patch:
+ *     summary: "Faoliyatni qisman yangilash"
  *     tags:
  *       - "Faoliyat"
  *     parameters:
@@ -159,7 +158,7 @@ router.post("/faoliyat",verifyToken, isFaoliyatCreator, createFaoliyat);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/faoliyat/:id",verifyToken, isFaoliyatOwner, updateFaoliyat);
+router.patch("/faoliyat/:id",verifyToken, isFaoliyatOwner, updateFaoliyat);
 
 /**
  * @swagger

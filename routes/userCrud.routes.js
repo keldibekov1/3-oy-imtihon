@@ -38,12 +38,11 @@ const userCrudRoute = express.Router();
  *         description: Server xatosi
  */
 userCrudRoute.get("/users",verifyToken,isAdmin, FindAll);
-
 /**
  * @swagger
  * /users/{id}:
- *   put:
- *     summary: Foydalanuvchini yangilash (status va type o‘zgartirilmaydi)
+ *   patch:
+ *     summary: Foydalanuvchini qisman yangilash (status va type o‘zgartirilmaydi)
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -71,7 +70,6 @@ userCrudRoute.get("/users",verifyToken,isAdmin, FindAll);
  *               phone:
  *                 type: string
  *                 example: "+998901234567"
- *          
  *     responses:
  *       200:
  *         description: Foydalanuvchi muvaffaqiyatli yangilandi
@@ -82,7 +80,7 @@ userCrudRoute.get("/users",verifyToken,isAdmin, FindAll);
  *       500:
  *         description: Server xatosi
  */
-userCrudRoute.put("/users/:id",verifyToken,isAdmin, Update);
+userCrudRoute.patch("/users/:id", verifyToken, isAdmin, Update);
 
 
 

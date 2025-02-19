@@ -42,29 +42,33 @@ async function Update(req, res) {
         const { id } = req.params;
         const { name, surname, email, phone, password } = req.body;
 
-        const { error } = updateUserSchema.validate(req.body);
-        if (error) {
-            return res.status(400).json({ message: error.details[0].message });
-        }
-
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        if (email && email !== user.email) {
+        // Validatsiya faqat mavjud maydonlar uchun
+        const updateData = {};
+        if (name !== undefined) updateData.name = name;
+        if (surname !== undefined) updateData.surname = surname;
+        if (phone !== undefined) updateData.phone = phone;
+
+        // Email tekshiruvi
+        if (email !== undefined && email !== user.email) {
             const emailExists = await User.findOne({ where: { email } });
             if (emailExists) {
                 return res.status(400).json({ message: "Email already in use" });
             }
+            updateData.email = email;
         }
 
-        let hashedPassword = user.password;
-        if (password) {
-            hashedPassword = await bcrypt.hash(password, 10);
+        // Parol o‘zgartirish
+        if (password !== undefined) {
+            updateData.password = await bcrypt.hash(password, 10);
         }
 
-        await user.update({ name, surname, email, phone, password: hashedPassword });
+        // Faqat kerakli maydonlarni yangilash
+        await user.update(updateData);
 
         res.status(200).json({ message: "User updated successfully", user });
     } catch (error) {
@@ -72,7 +76,6 @@ async function Update(req, res) {
         res.status(500).json({ message: "Server error" });
     }
 }
-
 
 async function FindAll(req, res) {
     try {

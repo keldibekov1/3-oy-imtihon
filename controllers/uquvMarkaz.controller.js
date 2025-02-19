@@ -84,16 +84,25 @@ async function update(req, res) {
     try {
         const { id } = req.params;
         const { name, photo, region, address } = req.body;
-        let uquvMarkaz = await UquvMarkaz.findByPk(id);
-        if (!uquvMarkaz) {
+        let oquvMarkaz = await UquvMarkaz.findByPk(id);
+
+        if (!oquvMarkaz) {
             return res.status(404).send({ message: "Not found data" });
         }
-        await uquvMarkaz.update({ name, photo, region, address });
-        res.status(200).send({ message: uquvMarkaz });
+
+        // Faqat kiritilgan maydonlarni yangilash
+        if (name !== undefined) oquvMarkaz.name = name;
+        if (photo !== undefined) oquvMarkaz.photo = photo;
+        if (region !== undefined) oquvMarkaz.region = region;
+        if (address !== undefined) oquvMarkaz.address = address;
+
+        await oquvMarkaz.save();
+        res.status(200).send({ message: "Updated successfully", data: oquvMarkaz });
     } catch (error) {
         res.status(500).send({ message: error.message });
     }
 }
+
 
 async function remove(req, res) {
     try {

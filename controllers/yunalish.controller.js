@@ -75,20 +75,26 @@ async function create(req, res) {
 };
 
 
-async function update(req, res) {
+ async function Update (req, res) {
     try {
-        const { id } = req.params; 
-        const { name, photo, faoliyatid } = req.body; 
-        const yunalish = await Yonalish.findByPk(id); 
-        if (!yunalish) {
-            return res.status(404).send({ message: "Yonalish not found" });
+        const { id } = req.params;
+        const { name, photo, faoliyatid } = req.body;
+
+        const yonalish = await Yonalish.findByPk(id);
+        if (!yonalish) {
+            return res.status(404).json({ message: "Yonalish topilmadi" });
         }
 
-        const updatedYonalish = await yunalish.update({ name, photo, faoliyatid }); 
-        res.status(200).send({ message: updatedYonalish, message: "Yonalish updated successfully" });
+        await yonalish.update({
+            name: name || yonalish.name,
+            photo: photo || yonalish.photo,
+            faoliyatid: faoliyatid || yonalish.faoliyatid
+        });
+
+        res.status(200).json({ message: "Yonalish muvaffaqiyatli yangilandi", data: yonalish });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -110,6 +116,4 @@ async function remove(req, res) {
     }
 }
 
-
-
-export{findAll, findOne, create ,update ,remove};
+export{findAll, findOne, create ,Update ,remove};

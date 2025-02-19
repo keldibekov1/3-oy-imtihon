@@ -139,7 +139,7 @@ router.get("/categories/:id", getCategoryById);
 /**
  * @swagger
  * /categories/{id}:
- *   put:
+ *   patch:
  *     summary: Kategoriyani yangilash
  *     tags: [ResursCategory]
  *     parameters:
@@ -166,7 +166,7 @@ router.get("/categories/:id", getCategoryById);
  *       200:
  *         description: Kategoriya yangilandi
  */
-router.put("/categories/:id", updateCategory);
+router.patch("/categories/:id", updateCategory);
 
 /**
  * @swagger

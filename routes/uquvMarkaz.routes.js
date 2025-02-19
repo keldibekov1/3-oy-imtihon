@@ -149,8 +149,8 @@ router.post("/oquvmarkaz", verifyToken, isSeo, create);
 /**
  * @swagger
  * /oquvmarkaz/{id}:
- *   put:
- *     summary: "O'quv markazini yangilash"
+ *   patch:
+ *     summary: "O'quv markazini qisman yangilash"
  *     tags:
  *       - "OquvMarkaz"
  *     parameters:
@@ -186,7 +186,8 @@ router.post("/oquvmarkaz", verifyToken, isSeo, create);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/oquvmarkaz/:id", verifyToken, isSeoOwner,update);
+router.patch("/oquvmarkaz/:id", verifyToken, isSeoOwner, update);
+
 
 /**
  * @swagger

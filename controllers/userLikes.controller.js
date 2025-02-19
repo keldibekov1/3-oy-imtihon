@@ -95,16 +95,23 @@ async function update(req, res) {
 
         const like = await UserLikes.findByPk(id);
         if (!like) {
-            return res.status(404).send({ message: "Data not found" });
+            return res.status(404).json({ message: "Data not found" });
         }
 
-        let updatedLike = await like.update({ userId, oquvmarkazId }); 
-        res.status(201).send({ message: updatedLike });
+        // Faqat jo‘natilgan maydonlarni yangilash
+        const updateData = {};
+        if (userId !== undefined) updateData.userId = userId;
+        if (oquvmarkazId !== undefined) updateData.oquvmarkazId = oquvmarkazId;
+
+        await like.update(updateData); 
+
+        res.status(200).json({ message: "UserLike updated successfully", data: like });
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send({message:error.message});
+        console.error(error.message);
+        res.status(500).json({ message: error.message });
     }
 };
+
 
 async function remove(req, res) {
     try {

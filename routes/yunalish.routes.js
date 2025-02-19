@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findAll, findOne, create, update, remove } from "../controllers/yunalish.controller.js";
+import { findAll, findOne, create, Update, remove } from "../controllers/yunalish.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 import isYonalishOwner from "../middleware/isYonalishOwner.js";
 
@@ -150,10 +150,10 @@ router.post("/yonalish", verifyToken, isYonalishOwner, create);
 /**
  * @swagger
  * /yonalish/{id}:
- *   put:
+ *   patch:
  *     tags: [Yonalish]
- *     summary: Update an existing Yonalish
- *     description: Update the Yonalish by its ID, providing name, photo, and faoliyatid
+ *     summary: Update specific fields of an existing Yonalish
+ *     description: Update the Yonalish partially by its ID, providing any subset of name, photo, or faoliyatid
  *     parameters:
  *       - in: path
  *         name: id
@@ -185,7 +185,7 @@ router.post("/yonalish", verifyToken, isYonalishOwner, create);
  *       500:
  *         description: Internal server error
  */
-router.put("/yonalish/:id", verifyToken,isYonalishOwner, update);
+router.patch("/yonalish/:id", verifyToken, isYonalishOwner, Update);
 
 /**
  * @swagger

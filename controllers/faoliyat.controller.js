@@ -51,11 +51,10 @@ const getAllFaoliyat = async (req, res) => {
   }
 };
 
-// Faoliyatni yangilash
 const updateFaoliyat = async (req, res) => {
   try {
     const { id } = req.params;
-    const { type, name, photo, filialId } = req.body;
+    const updates = req.body;
 
     const faoliyat = await Faoliyat.findByPk(id);
 
@@ -64,17 +63,12 @@ const updateFaoliyat = async (req, res) => {
     }
 
     // Faoliyatni yangilash
-    faoliyat.type = type || faoliyat.type;
-    faoliyat.name = name || faoliyat.name;
-    faoliyat.photo = photo || faoliyat.photo;
-    faoliyat.filialId = filialId || faoliyat.filialId;
-
-    await faoliyat.save(); // O‘zgarishlarni saqlash
+    await faoliyat.update(updates);
 
     return res.status(200).json(faoliyat); // Yangilangan faoliyatni qaytarish
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ message: error.message});
+    return res.status(500).json({ message: error.message });
   }
 };
 

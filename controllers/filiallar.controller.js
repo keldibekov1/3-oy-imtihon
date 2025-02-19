@@ -88,12 +88,10 @@ const getAllFiliallar = async (req, res) => {
   }
 };
 
-
-// Filialni yangilash
 const updateFilial = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, photo, region, phone, address, oquvmarkazId } = req.body;
+    const updates = req.body;
 
     const filial = await Filial.findByPk(id);
 
@@ -101,13 +99,12 @@ const updateFilial = async (req, res) => {
       return res.status(404).json({ message: "Filial topilmadi." });
     }
 
-    // Filialni yangilash
-    filial.name = name || filial.name;
-    filial.photo = photo || filial.photo;
-    filial.region = region || filial.region;
-    filial.phone = phone || filial.phone;
-    filial.address = address || filial.address;
-    filial.oquvmarkazId = oquvmarkazId || filial.oquvmarkazId;
+    // Faqat mavjud maydonlarni yangilash
+    Object.keys(updates).forEach((key) => {
+      if (updates[key] !== undefined) {
+        filial[key] = updates[key];
+      }
+    });
 
     await filial.save(); // O‘zgarishlarni saqlash
 
@@ -117,6 +114,7 @@ const updateFilial = async (req, res) => {
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
+
 
 // Filialni o‘chirish
 const deleteFilial = async (req, res) => {

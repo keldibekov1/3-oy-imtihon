@@ -144,8 +144,8 @@ router.post("/filial", verifyToken, isSeo, createFilial);
 /**
  * @swagger
  * /filial/{id}:
- *   put:
- *     summary: "Filialni yangilash"
+ *   patch:
+ *     summary: "Filialni qisman yangilash"
  *     tags:
  *       - "Filial"
  *     parameters:
@@ -187,7 +187,7 @@ router.post("/filial", verifyToken, isSeo, createFilial);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/filial/:id",verifyToken, isSeo, updateFilial);
+router.patch("/filial/:id", verifyToken, isSeo, updateFilial);
 
 /**
  * @swagger

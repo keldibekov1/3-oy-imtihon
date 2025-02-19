@@ -136,8 +136,8 @@ router.post("/userlikes", verifyToken,  create);
 /**
  * @swagger
  * /userlikes/{id}:
- *   put:
- *     summary: "Foydalanuvchining yoqtirishini yangilash"
+ *   patch:
+ *     summary: "Foydalanuvchining yoqtirishini qisman yangilash"
  *     tags:
  *       - "UserLikes"
  *     parameters:
@@ -167,7 +167,7 @@ router.post("/userlikes", verifyToken,  create);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/userlikes/:id",verifyToken,checkLikeOwner, update);
+router.patch("/userlikes/:id", verifyToken, checkLikeOwner, update);
 
 /**
  * @swagger

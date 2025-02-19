@@ -100,9 +100,6 @@ router.get("/comments", getAllComments);
  *           schema:
  *             type: object
  *             properties:
- *               userId:
- *                 type: integer
- *                 example: 1
  *               oquvmarkazId:
  *                 type: integer
  *                 example: 2
@@ -156,7 +153,7 @@ router.post("/comments", verifyToken,createComment);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/comments/:id",selfComment, updateComment);
+router.put("/comments/:id",verifyToken, selfComment, updateComment);
 
 /**
  * @swagger

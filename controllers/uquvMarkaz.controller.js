@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 
 async function findAll(req, res) {
     try {
-        const { page = 1, size = 10, sortBy = 'name', filter } = req.query;
+        const { page = 1, size = 10, sortBy, filter } = req.query;
         const limit = parseInt(size);
         const offset = (parseInt(page) - 1) * limit;
 
@@ -60,16 +60,25 @@ async function findOne(req, res) {
 
 async function create(req, res) {
     try {
-        const { name, photo, region, address, createdBy } = req.body;
-        if (!name || !region || !address || !createdBy) {
-            return res.status(400).send({ message: "Required all areas" });
+        if (!req.user || !req.user.id) {
+            return res.status(401).send({ message: "Avtorizatsiya talab qilinadi" });
         }
+
+        const { name, photo, region, address } = req.body;
+        const createdBy = req.user.id; 
+        if (!name || !region || !address) {
+            return res.status(400).send({ message: "Barcha maydonlar talab qilinadi" });
+        }
+
         let newUquvMarkaz = await UquvMarkaz.create({ name, photo, region, address, createdBy });
-        res.status(201).send({ message: newUquvMarkaz });
+
+        res.status(201).send({ message: "O‘quv markaz muvaffaqiyatli yaratildi", data: newUquvMarkaz });
     } catch (error) {
-        res.status(500).send({ message: error.message });
+        console.error("Server xatosi:", error);
+        res.status(500).send({ message: "Serverda xatolik yuz berdi: " + error.message });
     }
 }
+
 
 async function update(req, res) {
     try {

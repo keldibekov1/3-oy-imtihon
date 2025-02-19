@@ -5,6 +5,9 @@ import {
   updateFaoliyat,
   deleteFaoliyat,
 } from "../controllers/faoliyat.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import isFaoliyatCreator from "../middleware/isFaoliyatCreator.js";
+import isFaoliyatOwner from "../middleware/isFaoliyatOwner.js";
 
 const router = express.Router();
 
@@ -114,7 +117,7 @@ router.get("/faoliyat", getAllFaoliyat);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/faoliyat", createFaoliyat);
+router.post("/faoliyat",verifyToken, isFaoliyatCreator, createFaoliyat);
 
 /**
  * @swagger
@@ -156,7 +159,7 @@ router.post("/faoliyat", createFaoliyat);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/faoliyat/:id", updateFaoliyat);
+router.put("/faoliyat/:id",verifyToken, isFaoliyatOwner, updateFaoliyat);
 
 /**
  * @swagger
@@ -179,6 +182,6 @@ router.put("/faoliyat/:id", updateFaoliyat);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/faoliyat/:id", deleteFaoliyat);
+router.delete("/faoliyat/:id",verifyToken, isFaoliyatOwner, deleteFaoliyat);
 
 export default router;

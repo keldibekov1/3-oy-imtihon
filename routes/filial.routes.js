@@ -7,6 +7,7 @@ import {
 } from "../controllers/filiallar.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 import isSeo from "../middleware/isSeo.js";
+import isFilialOwnerOrAdmin from "../middleware/isFilialOwnerOrAdmin.js";
 
 const router = express.Router();
 
@@ -209,6 +210,6 @@ router.put("/filial/:id",verifyToken, isSeo, updateFilial);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/filial/:id",verifyToken, isSeo, deleteFilial);
+router.delete("/filial/:id",verifyToken, isFilialOwnerOrAdmin, deleteFilial);
 
 export default router;

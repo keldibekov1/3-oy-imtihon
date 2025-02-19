@@ -2,20 +2,41 @@ import { Op } from "sequelize";
 import Reception from "../models/reception.model.js";
 import User from "../models/user.model.js";
 import OquvMarkaz from "../models/uquvMarkaz.model.js";
+import sendSMS from "./sendSms.controller.js";
 
 // Foydalanuvchini kursga yozish
 export const addReception = async (req, res) => {
   try {
-    const { userId, oquvmarkazId } = req.body;
 
-    const user = await User.findByPk(userId);
-    const oquvMarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
-
-    if (!user || !oquvMarkaz) {
-      return res.status(404).json({ message: "Foydalanuvchi yoki Oquv markazi topilmadi" });
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Avtorizatsiya talab qilinadi" });
     }
 
+    const userId = req.user.id;
+    const { oquvmarkazId } = req.body;
+
+    const user = await User.findByPk(userId);
+    const oquvMarkaz = await OquvMarkaz.findByPk(oquvmarkazId, {
+      include: [
+          {
+              model: User,
+              as: 'creator', 
+              attributes: ['id', 'name', 'phone'], 
+          },
+      ],
+  });
+  
+  if (!user || !oquvMarkaz) {
+    return res.status(404).json({ message: "Foydalanuvchi yoki Oquv markazi topilmadi" });
+  }
+  const clientNum = oquvMarkaz.creator.dataValues.phone
+  // console.log(oquvMarkaz.creator.dataValues.phone);
+
     const newReception = await Reception.create({ userId, oquvmarkazId });
+
+// SMS YUBORISH HOZIRCHA UCHIQ 
+    // sendSMS(clientNum)
+// QWERTYUIOASDFGHJSCVBNMASDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     res.status(201).json(newReception);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -26,7 +47,7 @@ export const addReception = async (req, res) => {
 
 export const getAllReceptions = async (req, res) => {
   try {
-    const { page = 1, size = 10, sortBy = 'createdAt', filter } = req.query;
+    const { page = 1, size = 10, sortBy, filter } = req.query;
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
 

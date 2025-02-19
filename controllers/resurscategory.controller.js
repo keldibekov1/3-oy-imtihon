@@ -17,7 +17,7 @@ export const createCategory = async (req, res) => {
 // ✅ Barcha kategoriyalarni olish
 export const getAllCategories = async (req, res) => {
   try {
-    const { page = 1, size = 10, sortBy = 'createdAt', filter } = req.query;
+    const { page = 1, size = 10, sortBy, filter } = req.query;
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
 

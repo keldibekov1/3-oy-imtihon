@@ -34,7 +34,7 @@ const createFilial = async (req, res) => {
 
 const getAllFiliallar = async (req, res) => {
   try {
-    const { page = 1, size = 10, sortBy = 'name', filter } = req.query;
+    const { page = 1, size = 10, sortBy, filter } = req.query;
 
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
@@ -60,7 +60,7 @@ const getAllFiliallar = async (req, res) => {
   }
 
     // Apply sorting if provided
-    if (sort) {
+    if (sortBy) {
       queryOptions.order = [[sort, 'ASC']];
     }
 

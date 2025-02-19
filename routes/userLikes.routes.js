@@ -1,5 +1,7 @@
 import express from "express";
 import { findAll, findOne, create, update, remove } from "../controllers/userLikes.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import checkLikeOwner from "../middleware/checkLikeOwner.js";
 
 const router = express.Router();
 
@@ -108,7 +110,7 @@ router.get("/userlikes/:id", findOne);
  * @swagger
  * /userlikes:
  *   post:
- *     summary: "Foydalanuvchi tomonidan o‘quv markazini yoqtirish"
+ *     summary: "Foydalanuvchi tomonidan o‘quv markazini yoqtirish user id avto jwtdan olinadi"
  *     tags:
  *       - "UserLikes"
  *     requestBody:
@@ -118,9 +120,6 @@ router.get("/userlikes/:id", findOne);
  *           schema:
  *             type: object
  *             properties:
- *               userId:
- *                 type: integer
- *                 example: 1
  *               oquvmarkazId:
  *                 type: integer
  *                 example: 2
@@ -132,7 +131,7 @@ router.get("/userlikes/:id", findOne);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/userlikes", create);
+router.post("/userlikes", verifyToken,  create);
 
 /**
  * @swagger
@@ -168,7 +167,7 @@ router.post("/userlikes", create);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/userlikes/:id", update);
+router.put("/userlikes/:id",verifyToken,checkLikeOwner, update);
 
 /**
  * @swagger
@@ -191,7 +190,7 @@ router.put("/userlikes/:id", update);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/userlikes/:id", remove);
+router.delete("/userlikes/:id",verifyToken,checkLikeOwner, remove);
 
 export default router;
 

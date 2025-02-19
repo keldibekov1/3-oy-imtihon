@@ -39,8 +39,6 @@ const router = Router();
  *                 type: string
  *               photo:
  *                 type: string
- *               createdBy:
- *                 type: integer
  *               resursCategoryId:
  *                 type: integer
  *     responses:
@@ -49,7 +47,7 @@ const router = Router();
  *       500:
  *         description: Server xatosi
  */
-router.post("/resurslar", createResurs);
+router.post("/resurslar", verifyToken,  createResurs);
 
 /**
  * @swagger
@@ -190,7 +188,7 @@ router.get("/resurslar/:id", getResursById);
  *       500:
  *         description: Server xatosi
  */
-router.put("/resurslar/:id", updateResurs);
+router.put("/resurslar/:id", verifyToken,isResurs, updateResurs);
 
 /**
  * @swagger

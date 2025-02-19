@@ -107,8 +107,8 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Parol notogri" });
     }
 
-    let token = jwt.sign(
-      { email: user.email, type: user.type }, 
+    const token = jwt.sign(
+      { id: user.id, email: user.email, type: user.type }, 
       "secret", 
       { expiresIn: "1h" }
     );

@@ -1,14 +1,18 @@
 import { Op } from "sequelize";
 import Filial  from "../models/filiallar.model.js"; // Filial va OquvMarkaz modellari import qilinadi
 import OquvMarkaz from "../models/uquvMarkaz.model.js"
+import { logger } from "../services/logger.js";
 // Filial yaratish
 const createFilial = async (req, res) => {
   try {
     const { name, photo, region, phone, address, oquvmarkazId } = req.body;
+    const userId = req.user?.id || "Unknown";
+    logger.info("Filial yaratish sorovi", { userId, name, oquvmarkazId });
     const oquvmarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
 
     if (!oquvmarkaz) {
-      return res.status(404).json({ message: "O‘quv markazi topilmadi." });
+      logger.warn(`Filial qoshishda Oquv markazi topilmadi: oquvmarkazId=${oquvmarkazId}`);
+      return res.status(404).json({ message: "Oquv markazi topilmadi." });
     }
 
     const newFilial = await Filial.create({
@@ -19,7 +23,7 @@ const createFilial = async (req, res) => {
       address,
       oquvmarkazId,
     });
-
+    logger.info(`Yangi filial yaratildi: id=${newFilial.id}, name=${newFilial.name}`);
     return res.status(201).json(newFilial);
   } catch (error) {
     console.error(error);
@@ -64,10 +68,9 @@ const getAllFiliallar = async (req, res) => {
 
     // Fetching the data from the database
     const { rows, count } = await Filial.findAndCountAll(queryOptions);
-
-    // Calculate pagination details
     const totalItems = count;
     const totalPages = Math.ceil(totalItems / limit);
+    logger.info(`Filiallar royxati sorovi: page=${page}, size=${size}, sortBy=${sortBy}, filter=${filter}`);
 
     // Return success response with pagination
     return res.status(200).json({
@@ -81,6 +84,7 @@ const getAllFiliallar = async (req, res) => {
       },
     });
   } catch (error) {
+    logger.error("Filiallarni olishda xatolik", { error: error.message });
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
@@ -94,6 +98,7 @@ const updateFilial = async (req, res) => {
     const filial = await Filial.findByPk(id);
 
     if (!filial) {
+      logger.warn(`Yangilashda filial topilmadi: id=${id}`);
       return res.status(404).json({ message: "Filial topilmadi." });
     }
 
@@ -104,17 +109,19 @@ const updateFilial = async (req, res) => {
       }
     });
 
-    await filial.save(); // O‘zgarishlarni saqlash
+    await filial.save(); // Ozgarishlarni saqlash
+    logger.info(`Filial yangilandi: id=${id}, yangilangan maydonlar=${JSON.stringify(updates)}`);
 
     return res.status(200).json(filial); // Yangilangan filialni qaytarish
   } catch (error) {
+    logger.error(`Filialni yangilashda xatolik: ${error.message}`);
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
 
 
-// Filialni o‘chirish
+// Filialni ochirish
 const deleteFilial = async (req, res) => {
   try {
     const { id } = req.params;
@@ -122,14 +129,17 @@ const deleteFilial = async (req, res) => {
     const filial = await Filial.findByPk(id);
 
     if (!filial) {
+      logger.warn(`Ochirishda filial topilmadi: id=${id}`);
       return res.status(404).json({ message: "Filial topilmadi." });
     }
 
-    // Filialni o‘chirish
+    // Filialni ochirish
     await filial.destroy();
+    logger.info(`Filial ochirildi: id=${id}`);
 
-    return res.status(204).json(); // Muvaffaqiyatli o‘chirilganini bildirish
+    return res.status(200).json({msg: "O'chirildi"}); // Muvaffaqiyatli ochirilganini bildirish
   } catch (error) {
+    logger.error("Filial ochirishda xatolik", { error: error.message });
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }

@@ -37,6 +37,6 @@ const Filial = database.define("Filial", {
   },
 });
 
+OquvMarkaz.hasMany(Filial, { foreignKey: "oquvmarkazId", as: "filials" });
+Filial.belongsTo(OquvMarkaz, { foreignKey: "oquvmarkazId", as: "oquvMarkaz" });
 export default Filial;
-OquvMarkaz.hasMany(Filial, { foreignKey: "oquvmarkazId" }); // O'quv markazi bir nechta filialga ega bo'lishi mumkin
-Filial.belongsTo(OquvMarkaz, { foreignKey: "oquvmarkazId" }); // Filial bitta o'quv markazga tegishli

@@ -122,7 +122,7 @@ router.post("/comments", verifyToken,createComment);
 /**
  * @swagger
  * /comments/{id}:
- *   put:
+ *   patch:
  *     summary: "Commentni yangilash"
  *     tags:
  *       - "Comments"

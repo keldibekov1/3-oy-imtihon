@@ -3,12 +3,13 @@ import Reception from "../models/reception.model.js";
 import User from "../models/user.model.js";
 import OquvMarkaz from "../models/uquvMarkaz.model.js";
 import sendSMS from "./sendSms.controller.js";
+import { logger } from "../services/logger.js";
 
-// Foydalanuvchini kursga yozish
 export const addReception = async (req, res) => {
   try {
 
     if (!req.user || !req.user.id) {
+      logger.warn("Kursga yozilish uchun avtorizatsiya talab qilinadi");
       return res.status(401).json({ message: "Avtorizatsiya talab qilinadi" });
     }
 
@@ -27,6 +28,7 @@ export const addReception = async (req, res) => {
   });
   
   if (!user || !oquvMarkaz) {
+    logger.warn(`Foydalanuvchi yoki Oquv markazi topilmadi: userId=${userId}, oquvmarkazId=${oquvmarkazId}`);
     return res.status(404).json({ message: "Foydalanuvchi yoki Oquv markazi topilmadi" });
   }
   const clientNum = oquvMarkaz.creator.dataValues.phone
@@ -36,6 +38,7 @@ export const addReception = async (req, res) => {
 
 // SMS YUBORISH HOZIRCHA UCHIQ 
     sendSMS(clientNum)
+    logger.info(`Foydalanuvchi kursga yozildi: receptionId=${newReception.id}, userId=${userId}, oquvmarkazId=${oquvmarkazId}`);
 // QWERTYUIOASDFGHJSCVBNMASDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     res.status(201).json(newReception);
   } catch (error) {
@@ -43,7 +46,6 @@ export const addReception = async (req, res) => {
   }
 };
 
-// Barcha yozilgan foydalanuvchilarni olish
 
 export const getAllReceptions = async (req, res) => {
   try {
@@ -77,7 +79,6 @@ export const getAllReceptions = async (req, res) => {
       
   }
 
-    // Apply sorting based on the 'sortBy' parameter
     if (sortBy) {
       queryOptions.order = [[sortBy, 'ASC']];
     }
@@ -86,6 +87,7 @@ export const getAllReceptions = async (req, res) => {
 
     const totalItems = count;
     const totalPages = Math.ceil(totalItems / limit);
+    logger.info(`Barcha receptionlarni olish sorovi: page=${page}, size=${size}, sortBy=${sortBy}, filter=${filter}`);
 
     return res.status(200).json({
       message: "Success",
@@ -98,13 +100,13 @@ export const getAllReceptions = async (req, res) => {
       },
     });
   } catch (error) {
+    logger.error(`Receptionlarni olishda xatolik: ${error.message}`);
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
 
 
-// Bitta foydalanuvchining kursga yozilganligini ko'rish
 export const getReceptionById = async (req, res) => {
   try {
     const reception = await Reception.findByPk(req.params.id, {
@@ -115,25 +117,26 @@ export const getReceptionById = async (req, res) => {
     });
 
     if (!reception) {
+      logger.warn(`Reception topilmadi: id=${req.params.id}`);
       return res.status(404).json({ message: "Foydalanuvchi kursga yozilmagan" });
     }
-
+    logger.info(`Reception topildi: id=${req.params.id}`);
     res.json(reception);
   } catch (error) {
+    logger.error(`Receptionni olishda xatolik: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Foydalanuvchini boshqa kursga yozish (yangilash)
 export const updateReception = async (req, res) => {
   try {
     const reception = await Reception.findByPk(req.params.id);
 
     if (!reception) {
+      logger.warn(`Yangilashda reception topilmadi: id=${req.params.id}`);
       return res.status(404).json({ message: "Reception topilmadi" });
     }
 
-    // Faqat mavjud bo'lgan maydonlarni yangilash
     const { userId, oquvmarkazId } = req.body;
 
     if (userId !== undefined) {
@@ -144,25 +147,29 @@ export const updateReception = async (req, res) => {
     }
 
     await reception.save();
+    logger.info(`Reception yangilandi: id=${req.params.id}, yangi userId=${userId}, yangi oquvmarkazId=${oquvmarkazId}`);
 
 
     res.json(reception);
   } catch (error) {
+    logger.error(`Receptionni yangilashda xatolik: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 };
 
 
-// Foydalanuvchini kursdan o‘chirish
 export const deleteReception = async (req, res) => {
   try {
     const reception = await Reception.findByPk(req.params.id);
     if (!reception) {
+      logger.warn(`Ochirishda reception topilmadi: id=${req.params.id}`);
       return res.status(404).json({ message: "Reception topilmadi" });
     }
     await reception.destroy();
-    res.json({ message: "Reception muvaffaqiyatli o‘chirildi" });
+    logger.info(`Reception ochirildi: id=${req.params.id}`);
+    res.status(200).json({ message: "Reception muvaffaqiyatli ochirildi" });
   } catch (error) {
+    logger.error(`Receptionni ochirishda xatolik: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 };

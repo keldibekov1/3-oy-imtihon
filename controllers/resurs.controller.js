@@ -3,7 +3,6 @@ import { Op } from "sequelize";
 
 import ResursCategory from "../models/resursCategory.model.js";
 
-// ✅ Resurs yaratish
 export const createResurs = async (req, res) => {
   try {
       if (!req.user || !req.user.id) {
@@ -13,13 +12,11 @@ export const createResurs = async (req, res) => {
       const { name, media, description, photo, resursCategoryId } = req.body;
       const createdBy = req.user.id; // JWT dan foydalanuvchi ID ni olish
 
-      // Kategoriya mavjudligini tekshirish
       const category = await ResursCategory.findByPk(resursCategoryId);
       if (!category) {
           return res.status(404).json({ message: "Kategoriya topilmadi" });
       }
 
-      // Yangi resurs yaratish
       const newResurs = await Resurs.create({ name, media, description, photo, createdBy, resursCategoryId });
 
       res.status(201).json({ message: "Resurs muvaffaqiyatli yaratildi", data: newResurs });
@@ -31,7 +28,6 @@ export const createResurs = async (req, res) => {
 
   
 
-// ✅ Barcha resurslarni olish
 export const getAllResurs = async (req, res) => {
   try {
     const { page = 1, size = 10, sortBy , filter } = req.query;
@@ -46,7 +42,6 @@ export const getAllResurs = async (req, res) => {
       offset,
     };
 
-    // Apply filter if provided (filter by name or category)
     if (filter && sortBy) {
       queryOptions.where = {};
   
@@ -59,7 +54,6 @@ export const getAllResurs = async (req, res) => {
       }
   }
 
-    // Apply sorting based on the 'sortBy' parameter
     if (sortBy) {
       queryOptions.order = [[sortBy, 'ASC']];
     }
@@ -87,7 +81,6 @@ export const getAllResurs = async (req, res) => {
 
 
 
-// ✅ Bitta resursni olish
 export const getResursById = async (req, res) => {
   try {
     const resurs = await Resurs.findByPk(req.params.id, {
@@ -104,7 +97,6 @@ export const getResursById = async (req, res) => {
   }
 };
 
-// ✅ Resursni yangilash
 export const updateResurs = async (req, res) => {
   try {
     const { name, media, description, photo, resursCategoryId } = req.body;
@@ -127,7 +119,6 @@ export const updateResurs = async (req, res) => {
   }
 };
 
-// ✅ Resursni o‘chirish
 export const deleteResurs = async (req, res) => {
   try {
     const resurs = await Resurs.findByPk(req.params.id);

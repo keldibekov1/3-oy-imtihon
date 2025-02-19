@@ -15,6 +15,7 @@ import excelRoute from "./routes/excel.routes.js"
 import MulterRoute from "./routes/upload.routes.js";
 import userCrudRoute from "./routes/userCrud.routes.js";
 import cors from "cors";
+import getOquvMarkazStudentsRoute from "./routes/oquvMarkazRoutes.js"
 
 
 
@@ -41,13 +42,14 @@ app.use("/", yunalishRoute)
 app.use("/", excelRoute)
 app.use("/", MulterRoute)
 app.use("/", userCrudRoute)
+app.use("/", getOquvMarkazStudentsRoute)
 
 setupSwagger(app);
 
 async function bootstaprt() {
   try {
     await database.sync(
-    //  { force: true }
+     { force: true }
       
     );
     console.log("Connect to db");

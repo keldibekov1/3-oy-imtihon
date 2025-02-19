@@ -2,6 +2,8 @@ import express from "express";
 import { Update, FindAll} from "../controllers/userCrud.controller.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import verifyToken from "../middleware/verifyToken.js";
+import isAdmin from "../middleware/isAdmin.js";
 
 const userCrudRoute = express.Router();
 
@@ -35,7 +37,7 @@ const userCrudRoute = express.Router();
  *       500:
  *         description: Server xatosi
  */
-userCrudRoute.get("/users", FindAll);
+userCrudRoute.get("/users",verifyToken,isAdmin, FindAll);
 
 /**
  * @swagger
@@ -80,7 +82,7 @@ userCrudRoute.get("/users", FindAll);
  *       500:
  *         description: Server xatosi
  */
-userCrudRoute.put("/users/:id", Update);
+userCrudRoute.put("/users/:id",verifyToken,isAdmin, Update);
 
 
 

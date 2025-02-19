@@ -14,12 +14,19 @@ import yunalishRoute from "./routes/yunalish.routes.js"
 import excelRoute from "./routes/excel.routes.js"
 import MulterRoute from "./routes/upload.routes.js";
 import userCrudRoute from "./routes/userCrud.routes.js";
+import cors from "cors";
+
 
 
 let PORT = 3000;
 let app = express();
 
 app.use(express.json());
+app.use(cors({
+  origin: "http://localhost:3000", // yoki '*' barcha domenlarga ruxsat berish
+  credentials: true,
+  allowedHeaders: ["Authorization", "Content-Type"]
+}));
 
 app.use("/auth", authRouter);
 app.use("/",uquvMarkazroute)

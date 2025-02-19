@@ -17,9 +17,7 @@ const router = Router();
  *   post:
  *     tags: [Reception]
  *     summary: Add a new reception (enroll a user)
- *     description: Add a new reception by providing oquvmarkazId (course ID). The user ID is taken from the authorization token.
- *     security:
- *       - bearerAuth: [] # Add this if you're using JWT authentication
+ *     description: Add a new reception by providing userId and oquvmarkazId (course and user)
  *     requestBody:
  *       required: true
  *       content:
@@ -30,32 +28,15 @@ const router = Router();
  *               oquvmarkazId:
  *                 type: integer
  *                 description: The ID of the course the user is enrolling in
- *                 example: 1
  *     responses:
  *       201:
  *         description: Reception created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Reception muvaffaqiyatli qo'shildi
- *                 data:
- *                   type: object
- *                   description: The created reception object
- *       400:
- *         description: Bad Request (e.g., missing oquvmarkazId)
  *       404:
  *         description: User or OquvMarkaz not found
- *       401:
- *         description: Unauthorized (missing or invalid token)
  *       500:
  *         description: Internal server error
  */
-router.post("/receptions", verifyToken, addReception);
-
+router.post("/receptions",verifyToken, addReception);
 
 /**
  * @swagger
@@ -212,7 +193,6 @@ router.get("/receptions/:id", getReceptionById);
  *         description: Internal server error
  */
 router.patch("/receptions/:id", updateReception);
-
 
 /**
  * @swagger

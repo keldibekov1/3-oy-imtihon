@@ -5,15 +5,12 @@ import OquvMarkaz from "../models/uquvMarkaz.model.js"
 const createFilial = async (req, res) => {
   try {
     const { name, photo, region, phone, address, oquvmarkazId } = req.body;
-
-    // O‘quv markazi mavjudligini tekshirish
     const oquvmarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
 
     if (!oquvmarkaz) {
       return res.status(404).json({ message: "O‘quv markazi topilmadi." });
     }
 
-    // Yangi filial yaratish
     const newFilial = await Filial.create({
       name,
       photo,
@@ -23,18 +20,19 @@ const createFilial = async (req, res) => {
       oquvmarkazId,
     });
 
-    return res.status(201).json(newFilial); // Yangi filialni qaytarish
+    return res.status(201).json(newFilial);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
 
+
 // Barcha filiallarni olish
 
 const getAllFiliallar = async (req, res) => {
   try {
-    const { page = 1, size = 10, sortBy = 'name', filter } = req.query;
+    const { page = 1, size = 10, sortBy, filter } = req.query;
 
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
@@ -60,8 +58,8 @@ const getAllFiliallar = async (req, res) => {
   }
 
     // Apply sorting if provided
-    if (sort) {
-      queryOptions.order = [[sort, 'ASC']];
+    if (sortBy) {
+      queryOptions.order = [[sortBy, 'ASC']];
     }
 
     // Fetching the data from the database

@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 
 async function findAll(req, res) {
     try {
-        const { page = 1, size = 10, sortBy = 'name', filter } = req.query;
+        const { page = 1, size = 10, sortBy, filter } = req.query;
         const limit = parseInt(size);
         const offset = (parseInt(page) - 1) * limit;
 

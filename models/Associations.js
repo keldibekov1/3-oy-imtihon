@@ -48,6 +48,3 @@ import User from "./user.model.js";
 import OquvMarkaz from "./uquvMarkaz.model.js";
 import Reception from "./reception.model.js";
 
-// User - Reception (Many-to-Many)
-User.belongsToMany(OquvMarkaz, { through: Reception });
-OquvMarkaz.belongsToMany(User, { through: Reception });

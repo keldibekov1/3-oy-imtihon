@@ -106,22 +106,15 @@ export const getReceptionById = async (req, res) => {
 // Foydalanuvchini boshqa kursga yozish (yangilash)
 export const updateReception = async (req, res) => {
   try {
+    const { userId, oquvmarkazId } = req.body;
     const reception = await Reception.findByPk(req.params.id);
 
     if (!reception) {
       return res.status(404).json({ message: "Reception topilmadi" });
     }
 
-    // Faqat mavjud bo'lgan maydonlarni yangilash
-    const { userId, oquvmarkazId } = req.body;
-
-    if (userId !== undefined) {
-      reception.userId = userId;
-    }
-    if (oquvmarkazId !== undefined) {
-      reception.oquvmarkazId = oquvmarkazId;
-    }
-
+    reception.userId = userId;
+    reception.oquvmarkazId = oquvmarkazId;
     await reception.save();
 
     res.json(reception);
@@ -129,7 +122,6 @@ export const updateReception = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Foydalanuvchini kursdan o‘chirish
 export const deleteReception = async (req, res) => {

@@ -32,5 +32,7 @@ const OquvMarkaz = database.define("OquvMarkaz", {
 },
 });
 
+User.hasMany(OquvMarkaz, { foreignKey: "createdBy" });
+OquvMarkaz.belongsTo(User, { as: "creator", foreignKey: "createdBy" });
 
 export default OquvMarkaz;

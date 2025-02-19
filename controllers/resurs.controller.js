@@ -34,7 +34,7 @@ export const createResurs = async (req, res) => {
 // ✅ Barcha resurslarni olish
 export const getAllResurs = async (req, res) => {
   try {
-    const { page = 1, size = 10, sortBy = 'createdAt', filter } = req.query;
+    const { page = 1, size = 10, sortBy , filter } = req.query;
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
 

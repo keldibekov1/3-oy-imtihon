@@ -13,7 +13,6 @@ import userLikeRoute from "./routes/userLikes.routes.js"
 import yunalishRoute from "./routes/yunalish.routes.js"
 import excelRoute from "./routes/excel.routes.js"
 import MulterRoute from "./routes/upload.routes.js";
-
 let PORT = 3000;
 let app = express();
 

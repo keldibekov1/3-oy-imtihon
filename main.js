@@ -13,6 +13,8 @@ import userLikeRoute from "./routes/userLikes.routes.js"
 import yunalishRoute from "./routes/yunalish.routes.js"
 import excelRoute from "./routes/excel.routes.js"
 import MulterRoute from "./routes/upload.routes.js";
+import userCrudRoute from "./routes/userCrud.routes.js";
+
 
 let PORT = 3000;
 let app = express();
@@ -31,6 +33,7 @@ app.use("/",userLikeRoute)
 app.use("/", yunalishRoute)
 app.use("/", excelRoute)
 app.use("/", MulterRoute)
+app.use("/", userCrudRoute)
 
 setupSwagger(app);
 
@@ -48,9 +51,5 @@ async function bootstaprt() {
     console.log(error.message);
   }
 }
-
-
-
-
 
 bootstaprt();

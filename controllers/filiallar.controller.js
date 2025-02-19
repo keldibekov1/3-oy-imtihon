@@ -61,7 +61,7 @@ const getAllFiliallar = async (req, res) => {
 
     // Apply sorting if provided
     if (sortBy) {
-      queryOptions.order = [[sort, 'ASC']];
+      queryOptions.order = [[sortBy, 'ASC']];
     }
 
     // Fetching the data from the database

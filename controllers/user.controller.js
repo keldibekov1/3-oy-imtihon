@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { totp } from "otplib";
 import nodemailer from "nodemailer";
 import Joi from "joi";
+import { logger } from "../services/logger.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -28,125 +29,136 @@ const registerSchema = Joi.object({
   });
   
 
-const register = async (req, res) => {
-  try {
-    const { error, value } = registerSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
-
-   let {name, surname,password, type, email,phone } = value; 
-
-    let existingUser = await User.findOne({ where: { email } });
-
-    if (existingUser) {
-      if (existingUser.status == "pending") {
-        const token = jwt.sign({ email, name , type }, "secret", { expiresIn: "1h" });
-
-        await transporter.sendMail({
-          to: email,
-          subject: "Account activation (Again)",
-          text: `Siz allaqachon royxatdan otgan bolsangiz, lekin aktivlashtirmagan bolsangiz, shu havola orqali faollashtiring: http://localhost:3000/auth/activate/${token}`,
-        });
-
-        return res.status(200).json({ message: "Siz allaqachon royxatdan otganingiz uchun yana aktivatsiya havolasi yuborildi." });
+  const register = async (req, res) => {
+    try {
+      const { error, value } = registerSchema.validate(req.body);
+      if (error) {
+        logger.warn(`📌 Ro‘yxatdan o‘tish xatosi: ${error.details[0].message}`);
+        return res.status(400).json({ message: error.details[0].message });
       }
-
-      return res.status(400).json({ message: "Bu email allaqachon ro'yxatdan o'tgan va aktivlashtirilgan." });
+  
+      let { name, surname, password, type, email, phone } = value;
+      let existingUser = await User.findOne({ where: { email } });
+  
+      if (existingUser) {
+        if (existingUser.status == "pending") {
+          const token = jwt.sign({ email, name, type }, "secret", { expiresIn: "1h" });
+  
+          await transporter.sendMail({
+            to: email,
+            subject: "Account activation (Again)",
+            text: `Siz allaqachon ro‘yxatdan o‘tgan bo‘lsangiz, lekin aktivlashtirmagan bo‘lsangiz, shu havola orqali faollashtiring: http://localhost:3000/auth/activate/${token}`,
+          });
+  
+          logger.info(`🔄 Qayta aktivatsiya: ${email}`);
+          return res.status(200).json({ message: "Siz allaqachon ro‘yxatdan o‘tganingiz uchun yana aktivatsiya havolasi yuborildi." });
+        }
+  
+        logger.warn(`⚠️ Ro‘yxatdan o‘tish urinish (mavjud foydalanuvchi): ${email}`);
+        return res.status(400).json({ message: "Bu email allaqachon ro‘yxatdan o‘tgan va aktivlashtirilgan." });
+      }
+  
+      const hashedPassword = bcrypt.hashSync(password, 10);
+  
+      let user = await User.create({
+        surname,
+        password: hashedPassword,
+        name,
+        type,
+        phone,
+        status: "pending",
+        email,
+      });
+  
+      const token = jwt.sign({ email, name, type }, "secret", { expiresIn: "1h" });
+  
+      await transporter.sendMail({
+        to: email,
+        subject: "Account activation",
+        text: `http://localhost:3000/auth/activate/${token}`,
+      });
+  
+      logger.info(`✅ Yangi foydalanuvchi ro‘yxatdan o‘tdi: ${email}`);
+      res.status(201).json({ message: "Ro‘yxatdan o‘tildi. Emailingizni tekshiring.", token });
+    } catch (error) {
+      logger.error(`❌ Ro‘yxatdan o‘tishda xatolik: ${error.message}`);
+      res.status(500).json({ message: "Server xatosi" });
     }
-
-    const hashedPassword = bcrypt.hashSync(password, 10);
-
-    let user = await User.create({
-      surname,
-      password: hashedPassword,
-      name,
-      type,
-      phone,
-      status: "pending", 
-      email,
-    });
-
-    const token = jwt.sign({ email, name, type }, "secret", { expiresIn: "1h" });
-
-    await transporter.sendMail({
-      to: email,
-      subject: "Account activation",
-      text: `http://localhost:3000/auth/activate/${token}`,
-    });
-
-    res.status(201).json({ message: "Ro'yxatdan o'tildi. Emailingizni tekshiring.", token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server xatosi" });
-  }
-};
+  };
 
 
 
-const login = async (req, res) => {
-  try {
-    const { error, value } = loginSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+  const login = async (req, res) => {
+    try {
+      const { error, value } = loginSchema.validate(req.body);
+      if (error) {
+        logger.warn(`Login xatosi: ${error.details[0].message}`);
+        return res.status(400).json({ message: error.details[0].message });
+      }
+  
+      let { email, password } = value;
+      let user = await User.findOne({ where: { email } });
+  
+      if (!user) {
+        logger.warn(`Login urinish: foydalanuvchi topilmadi (${email})`);
+        return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+      }
+  
+      if (user.status !== "active") {
+        logger.warn(`Login urinish: faollashtirilmagan akkaunt (${email})`);
+        return res.status(403).json({ message: "Akkount aktiv emas! Emailingizni tekshiring." });
+      }
+  
+      let compare = bcrypt.compareSync(password, user.password);
+      if (!compare) {
+        logger.warn(`Login urinish: noto‘g‘ri parol (${email})`);
+        return res.status(401).json({ message: "Parol notogri" });
+      }
+  
+      const token = jwt.sign(
+        { id: user.id, email: user.email, type: user.type }, 
+        "secret", 
+        { expiresIn: "1h" }
+      );
+  
+      logger.info(`Muvaffaqiyatli login: ${email}`);
+      res.status(200).json({ token });
+    } catch (error) {
+      logger.error(`Login server xatosi: ${error.message}`);
+      console.error(error);
+      res.status(500).json({ message: "Server xatosi" });
     }
+  };
+  
 
-    let { email, password } = value;
-    let user = await User.findOne({ where: { email } });
 
-    if (!user) {
-      return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+
+  const activate = async (req, res) => {
+    try {
+      let { token } = req.params;
+      let decoded = jwt.verify(token, "secret");
+      logger.info(`Akkount aktivatsiya urinish: ${decoded.email}`);
+  
+      let user = await User.findOne({ where: { email: decoded.email.toLowerCase() } });
+      logger.debug(`Bazadan topilgan foydalanuvchi: ${JSON.stringify(user)}`);
+  
+      if (!user) {
+        logger.warn(`Aktivatsiya xatosi: foydalanuvchi topilmadi (${decoded.email})`);
+        return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+      }
+  
+      let updated = await User.update({ status: "active" }, { where: { email: decoded.email } });
+      logger.debug(`Foydalanuvchi yangilandi: ${JSON.stringify(updated)}`);
+  
+      logger.info(`Akkount aktiv qilindi: ${decoded.email}`);
+      res.status(200).json({ message: "Akkount aktiv qilindi!" });
+    } catch (error) {
+      logger.error(`Aktivatsiya xatosi: ${error.message}`);
+      res.status(500).json({ message: "Server xatosi" });
     }
-
-    if (user.status !== "active") {
-      return res.status(403).json({ message: "Akkount aktiv emas! Emailingizni tekshiring." });
-    }
-
-    let compare = bcrypt.compareSync(password, user.password);
-    if (!compare) {
-      return res.status(401).json({ message: "Parol notogri" });
-    }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, type: user.type }, 
-      "secret", 
-      { expiresIn: "1h" }
-    );
-
-    res.status(200).json({ token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server xatosi" });
-  }
-};
-
-
-
-const activate = async (req, res) => {
-  try {
-    let { token } = req.params;
-    let decoded = jwt.verify(token, "secret");
-
-    let user = await User.findOne({ where: { email: decoded.email.toLowerCase() } });
-    console.log("Bazadan topilgan foydalanuvchi:", user);
-
-    if (!user) {
-      return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
-    }
-
-    let updated = await User.update({ status: "active" }, { where: { email: decoded.email } });
-    console.log("Yangilash natijasi:", updated);
-
-    res.status(200).json({ message: "Akkount aktiv qilindi!" });
-  } catch (error) {
-    console.error("Xato:", error);
-    res.status(500).json({ message: "Server xatosi" });
-  }
-};
-
-
+  };
+  
 
 
 
 export { register, login, activate };
-

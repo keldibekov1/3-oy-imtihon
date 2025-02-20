@@ -7,7 +7,9 @@ const isFilialOwnerOrAdmin = async (req, res, next) => {
     try {
         let token = req.headers.authorization.split(" ")[1];
         let decoded = jwt.verify(token, "secret");
-
+        if (decoded.type === "user") {
+            return res.status(403).json({ message: "Bu amalni bajarish uchun sizda huquq yo'q" });
+        }
         // Foydalanuvchi 'seo' yoki 'admin' bo'lishi kerak
         if (decoded.type !== "seo" && decoded.type !== "admin") {
             return res.status(403).json({ message: "Bu sahifaga kirish huquqingiz yo'q" });

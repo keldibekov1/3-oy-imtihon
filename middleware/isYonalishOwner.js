@@ -9,6 +9,10 @@ const isYonalishOwner = async (req, res, next) => {
         let token = req.headers.authorization.split(" ")[1];
         let decoded = jwt.verify(token, "secret");
 
+        if (decoded.type !== "admin" ||decoded.type !== "seo" ) {
+            return res.status(403).json({ message: "Sizga xuquq yoq" });
+        }
+
         if (decoded.type === "admin") {
             return next();
         }

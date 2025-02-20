@@ -22,7 +22,7 @@ const Filial = database.define("Filial", {
   phone: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+   
   },
   address: {
     type: DataTypes.STRING,

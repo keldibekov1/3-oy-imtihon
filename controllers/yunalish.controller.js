@@ -61,12 +61,12 @@ async function findOne(req, res) {
 
 async function create(req, res) {
     try {
-        const { name, photo, faoliyatid } = req.body;
-        if (!name || !faoliyatid) {
+        const { name, photo, faoliyatId } = req.body;
+        if (!name || !faoliyatId) {
             return res.status(400).send({ message: "name and faoliyatid are required" });
         }
 
-        const newYonalish = await Yonalish.create({ name, photo, faoliyatid }); 
+        const newYonalish = await Yonalish.create({ name, photo, faoliyatId }); 
         res.status(201).send({ message:  "Yonalish created successfully" , newYonalish });
     } catch (error) {
         console.log(error.message);

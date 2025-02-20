@@ -6,6 +6,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "../controllers/resurscategory.controller.js";
+import isAdmin from "../middleware/isAdmin.js";
 
 const router = Router();
 
@@ -39,7 +40,7 @@ const router = Router();
  *       201:
  *         description: Yangi kategoriya yaratildi
  */
-router.post("/categories", createCategory);
+router.post("/categories", isAdmin, createCategory);
 
 /**
  * @swagger
@@ -166,7 +167,7 @@ router.get("/categories/:id", getCategoryById);
  *       200:
  *         description: Kategoriya yangilandi
  */
-router.patch("/categories/:id", updateCategory);
+router.patch("/categories/:id",isAdmin, updateCategory);
 
 /**
  * @swagger
@@ -185,6 +186,6 @@ router.patch("/categories/:id", updateCategory);
  *       200:
  *         description: Kategoriya o‘chirildi
  */
-router.delete("/categories/:id", deleteCategory);
+router.delete("/categories/:id", isAdmin, deleteCategory);
 
 export default router;

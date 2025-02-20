@@ -19,7 +19,7 @@ import getOquvMarkazStudentsRoute from "./routes/oquvMarkazRoutes.js"
 
 
 
-let PORT = 3000;
+let PORT = 4009;
 let app = express();
 
 app.use(express.json());

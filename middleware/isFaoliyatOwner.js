@@ -8,6 +8,10 @@ const isFaoliyatOwner = async (req, res, next) => {
         let token = req.headers.authorization.split(" ")[1];
         let decoded = jwt.verify(token, "secret");
 
+        if (decoded.type === "user") {
+            return res.status(403).json({ message: "Bu amalni bajarish uchun sizda huquq yo'q" });
+        }
+
         if (decoded.type === "admin") {
             return next();
         }

@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { findAll, findOne, create, Update, remove } from "../controllers/yunalish.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
-import isYonalishOwner from "../middleware/isYonalishOwner.js";
+import isSeo from "../middleware/isSeo.js";
+import isYonalishCreator from "../middleware/isYonalishCreator.js";
 
 const router = Router();
 
@@ -120,7 +121,7 @@ router.get("/yonalish/:id", findOne);
  *   post:
  *     tags: [Yonalish]
  *     summary: Create a new Yonalish
- *     description: Create a new Yonalish by providing name, photo, and faoliyatid
+ *     description: Create a new Yonalish by providing name, photo, and faoliyatId
  *     requestBody:
  *       required: true
  *       content:
@@ -134,18 +135,18 @@ router.get("/yonalish/:id", findOne);
  *               photo:
  *                 type: string
  *                 description: The photo URL associated with the Yonalish
- *               faoliyatid:
+ *               faoliyatId:
  *                 type: integer
  *                 description: The ID of the related Faoliyat
  *     responses:
  *       201:
  *         description: Yonalish created successfully
  *       400:
- *         description: Name and faoliyatid are required
+ *         description: Name and faoliyatId are required
  *       500:
  *         description: Internal server error
  */
-router.post("/yonalish", verifyToken, isYonalishOwner, create);
+router.post("/yonalish", verifyToken,isYonalishCreator,  create);
 
 /**
  * @swagger
@@ -153,7 +154,7 @@ router.post("/yonalish", verifyToken, isYonalishOwner, create);
  *   patch:
  *     tags: [Yonalish]
  *     summary: Update specific fields of an existing Yonalish
- *     description: Update the Yonalish partially by its ID, providing any subset of name, photo, or faoliyatid
+ *     description: Update the Yonalish partially by its ID, providing any subset of name, photo, or faoliyatId
  *     parameters:
  *       - in: path
  *         name: id
@@ -174,7 +175,7 @@ router.post("/yonalish", verifyToken, isYonalishOwner, create);
  *               photo:
  *                 type: string
  *                 description: The new photo URL associated with the Yonalish
- *               faoliyatid:
+ *               faoliyatId:
  *                 type: integer
  *                 description: The new ID of the related Faoliyat
  *     responses:
@@ -185,7 +186,7 @@ router.post("/yonalish", verifyToken, isYonalishOwner, create);
  *       500:
  *         description: Internal server error
  */
-router.patch("/yonalish/:id", verifyToken, isYonalishOwner, Update);
+router.patch("/yonalish/:id", verifyToken,  Update);
 
 /**
  * @swagger
@@ -209,6 +210,6 @@ router.patch("/yonalish/:id", verifyToken, isYonalishOwner, Update);
  *       500:
  *         description: Internal server error
  */
-router.delete("/yonalish/:id",verifyToken, isYonalishOwner, remove);
+router.delete("/yonalish/:id",verifyToken,  remove);
 
 export default router;

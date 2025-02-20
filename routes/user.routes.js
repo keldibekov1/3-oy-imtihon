@@ -122,7 +122,9 @@ router.post("/reset-password", sendResetPasswordEmail);
  *           schema:
  *             type: object
  *             properties:
- *               token:
+ *               email:
+ *                 type: string
+ *               otp:
  *                 type: string
  *               newPassword:
  *                 type: string

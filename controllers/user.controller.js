@@ -33,7 +33,7 @@ const registerSchema = Joi.object({
     try {
       const { error, value } = registerSchema.validate(req.body);
       if (error) {
-        logger.warn(`📌 Ro‘yxatdan o‘tish xatosi: ${error.details[0].message}`);
+        logger.warn(`📌 Royxatdan otish xatosi: ${error.details[0].message}`);
         return res.status(400).json({ message: error.details[0].message });
       }
   
@@ -58,7 +58,7 @@ const registerSchema = Joi.object({
                   </a>
                   
                   <hr style="margin-top: 20px; border: none; border-top: 1px solid #ddd;">
-                  <p style="color: #999; font-size: 12px;">Ushbu xabar avtomatik jo‘natildi, unga javob qaytarishingiz shart emas.</p>
+                  <p style="color: #999; font-size: 12px;">Ushbu xabar avtomatik jonatildi, unga javob qaytarishingiz shart emas.</p>
                 </div>
               </div>
             `
@@ -187,31 +187,34 @@ const registerSchema = Joi.object({
     }
   };
   
+  const otpStore = new Map(); // { email: { otp, expiresAt } }
+
   const sendResetPasswordEmail = async (req, res) => {
     try {
       const { email } = req.body;
-  
+    
       if (!email) return res.status(400).json({ message: "Email talab qilinadi" });
   
       let user = await User.findOne({ where: { email } });
       if (!user) return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
   
-      const resetToken = jwt.sign({ email: user.email }, "your_secret_key", { expiresIn: "15m" });
+      totp.options = { digits: 6 };
+      const otp = totp.generate("secret");
   
-      const resetLink = `http://localhost:4009/auth/reset-password/${resetToken}`;
+      // OTPni vaqtinchalik saqlaymiz (5 daqiqa amal qiladi)
+      otpStore.set(email, { otp, expiresAt: Date.now() + 1 * 60 * 1000 });
   
       await transporter.sendMail({
         to: user.email,
-        subject: "Parolni tiklash",
+        subject: "Parolni tiklash uchun OTP",
         html: `
           <p>Salom, ${user.name}!</p>
-          <p>Parolingizni tiklash uchun quyidagi havolaga bosing:</p>
-          <a href="${resetLink}">Parolni tiklash</a>
-          <p>Bu havola 15 daqiqa davomida amal qiladi.</p>
+          <p>Parolingizni tiklash uchun OTP kodingiz: <b>${otp}</b></p>
+          <p>Bu kod 1 daqiqa davomida amal qiladi.</p>
         `,
       });
   
-      res.status(200).json({ message: "Parolni tiklash havolasi emailga yuborildi" });
+      res.status(200).json({ message: "OTP emailga yuborildi" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server xatosi" });
@@ -220,27 +223,37 @@ const registerSchema = Joi.object({
   
   const resetPassword = async (req, res) => {
     try {
-      const { token, newPassword } = req.body;
+      const { email, otp, newPassword } = req.body;
   
-      if (!token || !newPassword) {
-        return res.status(400).json({ message: "Token va yangi parol talab qilinadi" });
+      if (!email || !otp || !newPassword) {
+        return res.status(400).json({ message: "Email, OTP va yangi parol talab qilinadi" });
       }
   
-      try {
-        const decoded = jwt.verify(token, "your_secret_key");
-  
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-  
-        await User.update({ password: hashedPassword }, { where: { email: decoded.email } });
-  
-        res.status(200).json({ message: "Parol muvaffaqiyatli yangilandi" });
-      } catch (error) {
-        res.status(400).json({ message: "Token noto‘g‘ri yoki muddati tugagan" });
+      const storedOTP = otpStore.get(email);
+      if (!storedOTP) {
+        return res.status(400).json({ message: "OTP topilmadi yoki muddati tugagan" });
       }
+  
+      if (storedOTP.otp !== otp) {
+        return res.status(400).json({ message: "Notogri OTP" });
+      }
+  
+      if (Date.now() > storedOTP.expiresAt) {
+        otpStore.delete(email);
+        return res.status(400).json({ message: "OTP muddati tugagan" });
+      }
+  
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await User.update({ password: hashedPassword }, { where: { email } });
+  
+      otpStore.delete(email);
+  
+      res.status(200).json({ message: "Parol muvaffaqiyatli yangilandi" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server xatosi" });
     }
   };
+  
 
 export { register, login, activate, sendResetPasswordEmail,resetPassword};

@@ -8,7 +8,6 @@ import {
 import verifyToken from "../middleware/verifyToken.js";
 import isSeo from "../middleware/isSeo.js";
 import isFilialOwnerOrAdmin from "../middleware/isFilialOwnerOrAdmin.js";
-
 const router = express.Router();
 
 /**
@@ -139,7 +138,7 @@ router.get("/filial", getAllFiliallar);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/filial", verifyToken, isSeo, createFilial);
+router.post("/filial", verifyToken, createFilial);
 
 /**
  * @swagger
@@ -187,7 +186,7 @@ router.post("/filial", verifyToken, isSeo, createFilial);
  *       "500":
  *         description: "Server xatosi"
  */
-router.patch("/filial/:id", verifyToken, isSeo, updateFilial);
+router.patch("/filial/:id", verifyToken,  updateFilial);
 
 /**
  * @swagger
@@ -210,6 +209,6 @@ router.patch("/filial/:id", verifyToken, isSeo, updateFilial);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/filial/:id",verifyToken, isFilialOwnerOrAdmin, deleteFilial);
+router.delete("/filial/:id",verifyToken,  deleteFilial);
 
 export default router;

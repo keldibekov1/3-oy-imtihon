@@ -193,4 +193,3 @@ router.patch("/userlikes/:id", verifyToken, checkLikeOwner, update);
 router.delete("/userlikes/:id",verifyToken,checkLikeOwner, remove);
 
 export default router;
-

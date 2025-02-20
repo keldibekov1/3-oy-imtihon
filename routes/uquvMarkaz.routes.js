@@ -186,7 +186,7 @@ router.post("/oquvmarkaz", verifyToken, isSeo, create);
  *       "500":
  *         description: "Server xatosi"
  */
-router.patch("/oquvmarkaz/:id", verifyToken, isSeoOwner, update);
+router.patch("/oquvmarkaz/:id", verifyToken,  update);
 
 
 /**
@@ -210,6 +210,6 @@ router.patch("/oquvmarkaz/:id", verifyToken, isSeoOwner, update);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/oquvmarkaz/:id",verifyToken, isSeoOwner, remove);
+router.delete("/oquvmarkaz/:id",verifyToken, remove);
 
 export default router;

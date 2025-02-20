@@ -11,7 +11,7 @@ async function findAll(req, res) {
         const limit = parseInt(size);
         const offset = (parseInt(page) - 1) * limit;
 
-        logger.info(`O‘quv markazlar ro‘yxati so‘rovi: page=${page}, size=${size}, sortBy=${sortBy}, filter=${filter}`);
+        logger.info(`Oquv markazlar royxati sorovi: page=${page}, size=${size}, sortBy=${sortBy}, filter=${filter}`);
 
         let queryOptions = {
             limit,
@@ -31,7 +31,7 @@ async function findAll(req, res) {
                         {
                             model: User,
                             as: "user",
-                            attributes: ["id", "name"], // Komment yozgan foydalanuvchini qo‘shamiz
+                            attributes: ["id", "name"], // Komment yozgan foydalanuvchini qoshamiz
                         }
                     ]
                 }
@@ -49,7 +49,7 @@ async function findAll(req, res) {
         }
 
         const { rows, count } = await UquvMarkaz.findAndCountAll(queryOptions);
-        logger.info(`Jami o‘quv markazlar: ${count}`);
+        logger.info(`Jami oquv markazlar: ${count}`);
 
         res.status(200).send({
             message: "Success",
@@ -62,7 +62,7 @@ async function findAll(req, res) {
             },
         });
     } catch (error) {
-        logger.error(`O‘quv markazlarni olishda xatolik: ${error.message}`);
+        logger.error(`Oquv markazlarni olishda xatolik: ${error.message}`);
         res.status(500).send({ message: error.message });
     }
 }
@@ -74,16 +74,16 @@ async function findAll(req, res) {
 async function findOne(req, res) {
     try {
         const { id } = req.params;
-        logger.info(`O‘quv markazni olish so‘rovi: ID=${id}`);
+        logger.info(`Oquv markazni olish sorovi: ID=${id}`);
 
         let uquvMarkaz = await UquvMarkaz.findByPk(id);
         if (!uquvMarkaz) {
-            logger.warn(`O‘quv markaz topilmadi: ID=${id}`);
+            logger.warn(`Oquv markaz topilmadi: ID=${id}`);
             return res.status(404).send({ message: "Not found data" });
         }
         res.status(200).send({ message: uquvMarkaz });
     } catch (error) {
-        logger.error(`O‘quv markazni olishda xatolik: ${error.message}`);
+        logger.error(`Oquv markazni olishda xatolik: ${error.message}`);
         res.status(500).send({ message: error.message });
     }
 }
@@ -97,19 +97,19 @@ async function create(req, res) {
 
         const { name, photo, region, address } = req.body;
         const createdBy = req.user.id;
-        logger.info(`Yangi o‘quv markaz yaratish urinish: name=${name}, region=${region}, createdBy=${createdBy}`);
+        logger.info(`Yangi oquv markaz yaratish urinish: name=${name}, region=${region}, createdBy=${createdBy}`);
 
         if (!name || !region || !address) {
-            logger.warn("O‘quv markaz yaratishda yetarli ma’lumotlar berilmagan.");
+            logger.warn("Oquv markaz yaratishda yetarli ma’lumotlar berilmagan.");
             return res.status(400).send({ message: "Barcha maydonlar talab qilinadi" });
         }
 
         let newUquvMarkaz = await UquvMarkaz.create({ name, photo, region, address, createdBy });
-        logger.info(`O‘quv markaz yaratildi: ID=${newUquvMarkaz.id}`);
+        logger.info(`Oquv markaz yaratildi: ID=${newUquvMarkaz.id}`);
 
-        res.status(201).send({ message: "O‘quv markaz muvaffaqiyatli yaratildi", data: newUquvMarkaz });
+        res.status(201).send({ message: "Oquv markaz muvaffaqiyatli yaratildi", data: newUquvMarkaz });
     } catch (error) {
-        logger.error(`O‘quv markaz yaratishda xatolik: ${error.message}`);
+        logger.error(`Oquv markaz yaratishda xatolik: ${error.message}`);
         res.status(500).send({ message: "Serverda xatolik yuz berdi: " + error.message });
     }
 }
@@ -118,12 +118,24 @@ async function update(req, res) {
     try {
         const { id } = req.params;
         const { name, photo, region, address } = req.body;
-        logger.info(`O‘quv markazni yangilash urinish: ID=${id}`);
+        const userId = req.user.id; // Foydalanuvchi ID
+        const userType = req.user.type; // "admin" yoki "user"
+        
+        if (userType === "user") {
+            return res.status(403).json({ message: "Bu amalni bajarish uchun sizda huquq yo'q" });
+        }
+
+        logger.info(`Oquv markazni yangilash urinish: ID=${id}, UserID=${userId}`);
 
         let oquvMarkaz = await UquvMarkaz.findByPk(id);
         if (!oquvMarkaz) {
-            logger.warn(`O‘quv markaz topilmadi: ID=${id}`);
+            logger.warn(`Oquv markaz topilmadi: ID=${id}`);
             return res.status(404).send({ message: "Not found data" });
+        }
+
+        if (userType !== "admin" && oquvMarkaz.createdBy !== userId) {
+            logger.warn(`Ruxsat yoq: UserID=${userId}, OquvMarkazID=${id}`);
+            return res.status(403).send({ message: "Bu oquv markazni yangilashga ruxsatingiz yoq" });
         }
 
         if (name !== undefined) oquvMarkaz.name = name;
@@ -132,33 +144,48 @@ async function update(req, res) {
         if (address !== undefined) oquvMarkaz.address = address;
 
         await oquvMarkaz.save();
-        logger.info(`O‘quv markaz yangilandi: ID=${id}`);
+        logger.info(`Oquv markaz yangilandi: ID=${id}, UserID=${userId}`);
 
         res.status(200).send({ message: "Updated successfully", data: oquvMarkaz });
     } catch (error) {
-        logger.error(`O‘quv markazni yangilashda xatolik: ${error.message}`);
+        logger.error(`Oquv markazni yangilashda xatolik: ${error.message}`);
         res.status(500).send({ message: error.message });
     }
 }
+
 
 async function remove(req, res) {
     try {
         const { id } = req.params;
-        logger.info(`O‘quv markazni o‘chirish urinish: ID=${id}`);
+        const userId = req.user.id; 
+        const userType = req.user.type; // "admin" yoki "user"
+
+         if (userType === "user") {
+      return res.status(403).json({ message: "Bu amalni bajarish uchun sizda huquq yo'q" });
+  }
+
+        logger.info(`Oquv markazni ochirish urinish: ID=${id}, UserID=${userId}`);
 
         let uquvMarkaz = await UquvMarkaz.findByPk(id);
         if (!uquvMarkaz) {
-            logger.warn(`O‘quv markaz topilmadi: ID=${id}`);
+            logger.warn(`Oquv markaz topilmadi: ID=${id}`);
             return res.status(404).send({ message: "Not found data" });
         }
+
+        if (userType !== "admin" && uquvMarkaz.createdBy !== userId) {
+            logger.warn(`Ruxsat yoq: UserID=${userId}, OquvMarkazID=${id}`);
+            return res.status(403).send({ message: "Bu oquv markazni ochirishga ruxsatingiz yoq" });
+        }
+
         await uquvMarkaz.destroy();
-        logger.info(`O‘quv markaz o‘chirildi: ID=${id}`);
+        logger.info(`Oquv markaz ochirildi: ID=${id}, UserID=${userId}`);
 
         res.status(200).send({ message: "Data removed successfully" });
     } catch (error) {
-        logger.error(`O‘quv markazni o‘chirishda xatolik: ${error.message}`);
+        logger.error(`Oquv markazni ochirishda xatolik: ${error.message}`);
         res.status(500).send({ message: error.message });
     }
 }
+
 
 export { findAll, findOne, create, update, remove };

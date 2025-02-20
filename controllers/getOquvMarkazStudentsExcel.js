@@ -2,12 +2,24 @@ import ExcelJS from "exceljs";
 import fs from "fs";
 import Reception from "../models/reception.model.js";
 import User from "../models/user.model.js";
+import OquvMarkaz from "../models/uquvMarkaz.model.js"; // O‘quv markaz modeli
 
 export const getOquvMarkazStudentsExcel = async (req, res) => {
   try {
     const { oquvmarkazId } = req.params;
+    const userId = req.user.id; 
+    const userType = req.user.type; 
 
-    // O‘quvchilarni olish
+    if (userType !== "admin") {
+      const isOwner = await OquvMarkaz.findOne({
+        where: { id: oquvmarkazId, createdBy: userId },
+      });
+
+      if (!isOwner) {
+        return res.status(403).json({ message: "Siz bu o‘quv markazga ega emassiz!" });
+      }
+    }
+
     const students = await Reception.findAll({
       where: { oquvmarkazId },
       include: [{ model: User, attributes: ["id", "name", "surname", "phone", "email"] }],
@@ -17,7 +29,6 @@ export const getOquvMarkazStudentsExcel = async (req, res) => {
       return res.status(404).json({ message: "O‘quvchilar topilmadi!" });
     }
 
-    // Excel fayl yaratish
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("O‘quvchilar");
 
@@ -29,9 +40,8 @@ export const getOquvMarkazStudentsExcel = async (req, res) => {
       { header: "Email", key: "email", width: 30 },
     ];
 
-    // Ma'lumotlarni qo‘shish
     students.forEach((student) => {
-      if (student.User) { // `User` mavjudligini tekshiramiz
+      if (student.User) {
         worksheet.addRow({
           id: student.User.id,
           name: student.User.name,
@@ -42,17 +52,15 @@ export const getOquvMarkazStudentsExcel = async (req, res) => {
       }
     });
 
-    // Faylni serverga saqlaymiz
     const filePath = `uploads/students_${oquvmarkazId}.xlsx`;
     await workbook.xlsx.writeFile(filePath);
 
-    // Foydalanuvchiga faylni jo‘natamiz
     res.download(filePath, `students_${oquvmarkazId}.xlsx`, (err) => {
       if (err) {
         console.error("Faylni yuklashda xatolik:", err);
         res.status(500).json({ message: "Faylni yuklashda xatolik!" });
       }
-      fs.unlinkSync(filePath); // Faylni o‘chirib tashlaymiz
+      fs.unlinkSync(filePath); 
     });
 
   } catch (error) {

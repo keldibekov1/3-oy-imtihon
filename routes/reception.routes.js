@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { addReception, getAllReceptions, getReceptionById, updateReception, deleteReception } from "../controllers/reception.controller.js";
+import { addReception, getAllReceptions, getReceptionById,  deleteReception } from "../controllers/reception.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
+import isAdmin from "../middleware/isAdmin.js";
 
 const router = Router();
 
@@ -130,7 +131,7 @@ router.post("/receptions",verifyToken, addReception);
  *       500:
  *         description: "Internal server error"
  */
-router.get("/receptions", getAllReceptions);
+router.get("/receptions", isAdmin,getAllReceptions);
 
 
 /**
@@ -155,44 +156,8 @@ router.get("/receptions", getAllReceptions);
  *       500:
  *         description: Internal server error
  */
-router.get("/receptions/:id", getReceptionById);
+router.get("/receptions/:id",isAdmin, getReceptionById);
 
-/**
- * @swagger
- * /receptions/{id}:
- *   patch:
- *     tags: [Reception]
- *     summary: Update a reception (partial update)
- *     description: Partially update the reception (enrollment) of a user by providing userId and/or oquvmarkazId
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: The ID of the reception to update
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userId:
- *                 type: integer
- *                 description: The new user ID (optional)
- *               oquvmarkazId:
- *                 type: integer
- *                 description: The new course ID (optional)
- *     responses:
- *       200:
- *         description: Reception updated successfully
- *       404:
- *         description: Reception not found
- *       500:
- *         description: Internal server error
- */
-router.patch("/receptions/:id", updateReception);
 
 /**
  * @swagger
@@ -216,6 +181,6 @@ router.patch("/receptions/:id", updateReception);
  *       500:
  *         description: Internal server error
  */
-router.delete("/receptions/:id", deleteReception);
+router.delete("/receptions/:id",isAdmin, deleteReception);
 
 export default router;

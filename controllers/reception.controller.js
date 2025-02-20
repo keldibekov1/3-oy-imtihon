@@ -37,7 +37,7 @@ export const addReception = async (req, res) => {
     const newReception = await Reception.create({ userId, oquvmarkazId });
 
 // SMS YUBORISH HOZIRCHA UCHIQ 
-    sendSMS(clientNum)
+    // sendSMS(clientNum)
     logger.info(`Foydalanuvchi kursga yozildi: receptionId=${newReception.id}, userId=${userId}, oquvmarkazId=${oquvmarkazId}`);
 // QWERTYUIOASDFGHJSCVBNMASDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     res.status(201).json(newReception);

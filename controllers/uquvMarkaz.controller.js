@@ -2,6 +2,8 @@ import UquvMarkaz from "../models/uquvMarkaz.model.js";
 import Filial from "../models/filiallar.model.js"; // Filialni import qilish
 import { Op } from "sequelize";
 import { logger } from "../services/logger.js";
+import User from "../models/user.model.js"; // Foydalanuvchi ismini olish uchun
+import Comment from "../models/comment.model.js"; 
 
 async function findAll(req, res) {
     try {
@@ -18,19 +20,29 @@ async function findAll(req, res) {
             include: [
                 {
                     model: Filial,
-                    as: "filials", // **E'tibor bering, bog‘liqlik nomini to‘g‘ri yozish kerak**
+                    as: "filials",
                     attributes: ["id", "name", "photo", "region", "phone", "address"],
                 },
+                {
+                    model: Comment,
+                    as: "comments",
+                    attributes: ["id", "desc", "star", "createdAt"],
+                    include: [
+                        {
+                            model: User,
+                            as: "user",
+                            attributes: ["id", "name"], // Komment yozgan foydalanuvchini qo‘shamiz
+                        }
+                    ]
+                }
             ],
         };
 
         if (filter && sortBy) {
             queryOptions.where = {};
-            
             if (sortBy === "name") {
                 queryOptions.where.name = { [Op.like]: `%${filter}%` };
             }
-            
             if (sortBy === "region") {
                 queryOptions.where.region = { [Op.like]: `%${filter}%` };
             }
@@ -54,6 +66,7 @@ async function findAll(req, res) {
         res.status(500).send({ message: error.message });
     }
 }
+
 
 
 

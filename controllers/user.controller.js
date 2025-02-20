@@ -46,16 +46,30 @@ const registerSchema = Joi.object({
   
           await transporter.sendMail({
             to: email,
-            subject: "Account activation (Again)",
-            text: `Siz allaqachon ro‘yxatdan o‘tgan bo‘lsangiz, lekin aktivlashtirmagan bo‘lsangiz, shu havola orqali faollashtiring: http://localhost:3000/auth/activate/${token}`,
+            subject: "Account activation",
+            html: `
+              <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
+                <div style="max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                  <h2 style="color: #333;">Assalomu alaykum, ${name}!</h2>
+                  <p style="color: #666;">Akkauntingizni aktiv qilish uchun quyidagi tugmani bosing:</p>
+                  <a href="http://localhost:3000/auth/activate/${token}" 
+                     style="display: inline-block; background-color: #28a745; color: white; padding: 12px 20px; text-decoration: none; font-size: 16px; border-radius: 5px; margin-top: 10px;">
+                    🔥 Akkauntni Aktiv Qilish
+                  </a>
+                  
+                  <hr style="margin-top: 20px; border: none; border-top: 1px solid #ddd;">
+                  <p style="color: #999; font-size: 12px;">Ushbu xabar avtomatik jo‘natildi, unga javob qaytarishingiz shart emas.</p>
+                </div>
+              </div>
+            `
           });
   
           logger.info(`🔄 Qayta aktivatsiya: ${email}`);
-          return res.status(200).json({ message: "Siz allaqachon ro‘yxatdan o‘tganingiz uchun yana aktivatsiya havolasi yuborildi." });
+          return res.status(201).json({ message: "Royxatdan otildi. Emailingizni tekshiring.", token });
         }
   
-        logger.warn(`⚠️ Ro‘yxatdan o‘tish urinish (mavjud foydalanuvchi): ${email}`);
-        return res.status(400).json({ message: "Bu email allaqachon ro‘yxatdan o‘tgan va aktivlashtirilgan." });
+        logger.warn(`⚠️ Royxatdan otish urinish (mavjud foydalanuvchi): ${email}`);
+        return res.status(400).json({ message: "Bu email allaqachon royxatdan otgan va aktivlashtirilgan." });
       }
   
       const hashedPassword = bcrypt.hashSync(password, 10);
@@ -75,13 +89,28 @@ const registerSchema = Joi.object({
       await transporter.sendMail({
         to: email,
         subject: "Account activation",
-        text: `http://localhost:3000/auth/activate/${token}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
+            <div style="max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+              <h2 style="color: #333;">Assalomu alaykum, ${name}!</h2>
+              <p style="color: #666;">Akkauntingizni aktiv qilish uchun quyidagi tugmani bosing:</p>
+              <a href="http://localhost:3000/auth/activate/${token}" 
+                 style="display: inline-block; background-color: #28a745; color: white; padding: 12px 20px; text-decoration: none; font-size: 16px; border-radius: 5px; margin-top: 10px;">
+                🔥 Akkauntni Aktiv Qilish
+              </a>
+              
+              <hr style="margin-top: 20px; border: none; border-top: 1px solid #ddd;">
+              <p style="color: #999; font-size: 12px;">Ushbu xabar avtomatik jonatildi, unga javob qaytarishingiz shart emas.</p>
+            </div>
+          </div>
+        `
       });
+      
   
-      logger.info(`✅ Yangi foydalanuvchi ro‘yxatdan o‘tdi: ${email}`);
-      res.status(201).json({ message: "Ro‘yxatdan o‘tildi. Emailingizni tekshiring.", token });
+      logger.info(`✅ Yangi foydalanuvchi royxatdan otdi: ${email}`);
+      res.status(201).json({ message: "Royxatdan otildi. Emailingizni tekshiring.", token });
     } catch (error) {
-      logger.error(`❌ Ro‘yxatdan o‘tishda xatolik: ${error.message}`);
+      logger.error(`❌ Royxatdan otishda xatolik: ${error.message}`);
       res.status(500).json({ message: "Server xatosi" });
     }
   };
@@ -111,7 +140,7 @@ const registerSchema = Joi.object({
   
       let compare = bcrypt.compareSync(password, user.password);
       if (!compare) {
-        logger.warn(`Login urinish: noto‘g‘ri parol (${email})`);
+        logger.warn(`Login urinish: notogri parol (${email})`);
         return res.status(401).json({ message: "Parol notogri" });
       }
   

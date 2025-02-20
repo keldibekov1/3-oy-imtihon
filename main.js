@@ -24,8 +24,9 @@ let app = express();
 
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:3000", // yoki '*' barcha domenlarga ruxsat berish
+  origin: true, // Barcha domenlarga ruxsat
   credentials: true,
+  methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Authorization", "Content-Type"]
 }));
 

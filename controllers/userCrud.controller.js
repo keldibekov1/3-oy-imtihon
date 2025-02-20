@@ -21,29 +21,14 @@ phone: Joi.string()
     password: Joi.string().min(6).required(), 
 });
 
-async function Remove(req, res) {
-    try {
-        const { id } = req.params;
 
-        const user = await User.findByPk(id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
 
-        await user.update({ status: "pending" });
-
-        res.status(200).json({ message: "User deleted successfully" });
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ message: "Server error" });
-    }
-}
 
 
 async function Update(req, res) {
     try {
         const { id } = req.params;
-        const { name, surname, email, phone, password } = req.body;
+        const { name, surname, email, phone, password,status } = req.body;
 
         const user = await User.findByPk(id);
         if (!user) {
@@ -65,6 +50,9 @@ async function Update(req, res) {
 
         if (password !== undefined) {
             updateData.password = await bcrypt.hash(password, 10);
+        }
+        if (status !== undefined) {
+            updateData.status = status
         }
 
         await user.update(updateData);
@@ -105,5 +93,5 @@ async function FindAll(req, res) {
 }
 
 
-export {  Update , FindAll , Remove};
+export {  Update , FindAll };
 

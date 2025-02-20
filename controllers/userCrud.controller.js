@@ -16,26 +16,29 @@ phone: Joi.string()
     .pattern(/^\+998[0-9]{9}$/) // O'zbekiston telefon raqami formati: +998xxxxxxxxx
     .required()
     .messages({
-        "string.pattern.base": "Telefon raqam formati noto‘g‘ri! +998 bilan boshlanishi kerak",
+        "string.pattern.base": "Telefon raqam formati notogri! +998 bilan boshlanishi kerak",
     }),
-    password: Joi.string().min(6).required(), // Faqat parol o'zgarishi mumkin
+    password: Joi.string().min(6).required(), 
 });
 
-// async function Remove(req, res) {
-//     try {
+async function Remove(req, res) {
+    try {
+        const { id } = req.params;
 
-//         await User.destroy({ where: { id: req.params.id } });
-//         let user = await User.findByPk(req.params.id);
-//         if (!user) {
-//             return res.status(404).json({ message: "User not found" });
-//         }
-//         res.status(200).send({ message: "User deleted successfully" });
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-//     } catch (error) {
-//         console.log(error.message);
-//         res.status(500).send({ message: error.message });
-//     }
-// }
+        await user.update({ status: "pending" });
+
+        res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
 
 async function Update(req, res) {
     try {
@@ -47,13 +50,11 @@ async function Update(req, res) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Validatsiya faqat mavjud maydonlar uchun
         const updateData = {};
         if (name !== undefined) updateData.name = name;
         if (surname !== undefined) updateData.surname = surname;
         if (phone !== undefined) updateData.phone = phone;
 
-        // Email tekshiruvi
         if (email !== undefined && email !== user.email) {
             const emailExists = await User.findOne({ where: { email } });
             if (emailExists) {
@@ -62,12 +63,10 @@ async function Update(req, res) {
             updateData.email = email;
         }
 
-        // Parol o‘zgartirish
         if (password !== undefined) {
             updateData.password = await bcrypt.hash(password, 10);
         }
 
-        // Faqat kerakli maydonlarni yangilash
         await user.update(updateData);
 
         res.status(200).json({ message: "User updated successfully", user });
@@ -106,5 +105,5 @@ async function FindAll(req, res) {
 }
 
 
-export {  Update , FindAll};
+export {  Update , FindAll , Remove};
 

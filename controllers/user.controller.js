@@ -187,7 +187,60 @@ const registerSchema = Joi.object({
     }
   };
   
+  const sendResetPasswordEmail = async (req, res) => {
+    try {
+      const { email } = req.body;
+  
+      if (!email) return res.status(400).json({ message: "Email talab qilinadi" });
+  
+      let user = await User.findOne({ where: { email } });
+      if (!user) return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+  
+      const resetToken = jwt.sign({ email: user.email }, "your_secret_key", { expiresIn: "15m" });
+  
+      const resetLink = `http://localhost:4009/auth/reset-password/${resetToken}`;
+  
+      await transporter.sendMail({
+        to: user.email,
+        subject: "Parolni tiklash",
+        html: `
+          <p>Salom, ${user.name}!</p>
+          <p>Parolingizni tiklash uchun quyidagi havolaga bosing:</p>
+          <a href="${resetLink}">Parolni tiklash</a>
+          <p>Bu havola 15 daqiqa davomida amal qiladi.</p>
+        `,
+      });
+  
+      res.status(200).json({ message: "Parolni tiklash havolasi emailga yuborildi" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server xatosi" });
+    }
+  };
+  
+  const resetPassword = async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+  
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token va yangi parol talab qilinadi" });
+      }
+  
+      try {
+        const decoded = jwt.verify(token, "your_secret_key");
+  
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+        await User.update({ password: hashedPassword }, { where: { email: decoded.email } });
+  
+        res.status(200).json({ message: "Parol muvaffaqiyatli yangilandi" });
+      } catch (error) {
+        res.status(400).json({ message: "Token noto‘g‘ri yoki muddati tugagan" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server xatosi" });
+    }
+  };
 
-
-
-export { register, login, activate };
+export { register, login, activate, sendResetPasswordEmail,resetPassword};

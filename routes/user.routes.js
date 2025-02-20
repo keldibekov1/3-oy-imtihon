@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, activate } from "../controllers/user.controller.js";
+import { register, login, activate, sendResetPasswordEmail, resetPassword } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
@@ -86,5 +86,52 @@ router.post("/login", login);
  */
 router.get("/activate/:token", activate);
 
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Send password reset email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset email sent
+ *       404:
+ *         description: User not found
+ */
+router.post("/reset-password", sendResetPasswordEmail);
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   put:
+ *     summary: Reset user password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       400:
+ *         description: Invalid or expired token
+ */
+router.put("/reset-password", resetPassword);
 
 export default router;

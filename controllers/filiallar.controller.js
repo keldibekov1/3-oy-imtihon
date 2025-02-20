@@ -43,7 +43,12 @@ const getAllFiliallar = async (req, res) => {
 
     // Default query options for pagination and inclusion
     const queryOptions = {
-      include: [OquvMarkaz],
+      include: [
+        {
+          model: OquvMarkaz,
+          as: "oquvMarkaz", // SHU YERDA AS NOMINI TO‘G‘RI YOZISH KERAK
+        },
+      ],
       limit,
       offset,
     };
@@ -59,7 +64,7 @@ const getAllFiliallar = async (req, res) => {
       if (sortBy === "region") {
           queryOptions.where.region = { [Op.like]: `%${filter}%` };
       }
-  }
+    }
 
     // Apply sorting if provided
     if (sortBy) {

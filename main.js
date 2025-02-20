@@ -49,7 +49,7 @@ setupSwagger(app);
 async function bootstaprt() {
   try {
     await database.sync(
-     { force: true }
+    //  { force: true }
       
     );
     console.log("Connect to db");

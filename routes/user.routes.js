@@ -33,6 +33,8 @@ const router = express.Router();
  *                 type: string
  *               phone:
  *                type: string
+ *               type:
+ *                type: string
  *     responses:
  *       201:
  *         description: User registered successfully

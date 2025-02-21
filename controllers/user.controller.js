@@ -57,7 +57,7 @@ const registerSchema = Joi.object({
                 <div style="max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
                   <h2 style="color: #333;">Assalomu alaykum, ${name}!</h2>
                   <p style="color: #666;">Akkauntingizni aktiv qilish uchun quyidagi tugmani bosing:</p>
-                  <a href="http://localhost:3000/auth/activate/${token}" 
+                  <a href="http://63.177.173.107:4050/auth/activate/${token}" 
                      style="display: inline-block; background-color: #28a745; color: white; padding: 12px 20px; text-decoration: none; font-size: 16px; border-radius: 5px; margin-top: 10px;">
                     🔥 Akkauntni Aktiv Qilish
                   </a>
@@ -99,7 +99,7 @@ const registerSchema = Joi.object({
             <div style="max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #333;">Assalomu alaykum, ${name}!</h2>
               <p style="color: #666;">Akkauntingizni aktiv qilish uchun quyidagi tugmani bosing:</p>
-              <a href="http://:3000/auth/activate/${token}" 
+              <a href="http://63.177.173.107:4050/auth/activate/${token}" 
                  style="display: inline-block; background-color: #28a745; color: white; padding: 12px 20px; text-decoration: none; font-size: 16px; border-radius: 5px; margin-top: 10px;">
                 🔥 Akkauntni Aktiv Qilish
               </a>

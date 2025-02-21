@@ -20,7 +20,7 @@ import RegionRoute from "./routes/region.routes.js";
 
 
 
-let PORT = 4009;
+let PORT = 4050;
 let app = express();
 
 app.use(express.json());

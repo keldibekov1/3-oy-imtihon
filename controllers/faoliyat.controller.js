@@ -3,14 +3,14 @@ import Filial from "../models/filiallar.model.js";
 // Faoliyat yaratish
 const createFaoliyat = async (req, res) => {
   try {
-    const { type, name, photo, filialId } = req.body;
+    const { type, name, photo, oquvmarkazId } = req.body;
 
     // Yangi faoliyat yaratish
     const newFaoliyat = await Faoliyat.create({
       type,
       name,
       photo,
-      filialId,
+      oquvmarkazId,
     });
 
     return res.status(201).json(newFaoliyat); // Yangi faoliyatni qaytarish

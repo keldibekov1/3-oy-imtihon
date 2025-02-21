@@ -6,7 +6,7 @@ import {
   deleteFaoliyat,
 } from "../controllers/faoliyat.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
-import isFaoliyatCreator from "../middleware/isFaoliyatCreator.js";
+import isOquvmarkazCreator from "../middleware/isOquvmarkazCreator.js";
 import isFaoliyatOwner from "../middleware/isFaoliyatOwner.js";
 
 const router = express.Router();
@@ -105,7 +105,7 @@ router.get("/faoliyat", getAllFaoliyat);
  *               photo:
  *                 type: string
  *                 example: "https://example.com/photo.jpg"
- *               filialId:
+ *               OquvmarkazId:
  *                 type: integer
  *                 example: 1
  *     responses:
@@ -116,7 +116,7 @@ router.get("/faoliyat", getAllFaoliyat);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/faoliyat",verifyToken, isFaoliyatCreator, createFaoliyat);
+router.post("/faoliyat",verifyToken, isOquvmarkazCreator, createFaoliyat);
 
 /**
  * @swagger

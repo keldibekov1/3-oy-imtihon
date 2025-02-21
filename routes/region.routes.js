@@ -1,6 +1,7 @@
 
 import express from "express";
 import { FindAll, FindOne, Update, Delete } from "../controllers/region.controller.js";
+import isAdmin from "../middleware/isAdmin.js";
 
 const RegionRoute = express.Router();
 
@@ -73,7 +74,7 @@ RegionRoute.get("/regions/:id", FindOne);
  *       404:
  *         description: Region topilmadi
  */
-RegionRoute.patch("/regions/:id", Update);
+RegionRoute.patch("/regions/:id",isAdmin, Update);
 
 /**
  * @swagger
@@ -94,6 +95,6 @@ RegionRoute.patch("/regions/:id", Update);
  *       404:
  *         description: Region topilmadi
  */
-RegionRoute.delete("/regions/:id", Delete);
+RegionRoute.delete("/regions/:id",isAdmin ,Delete);
 
 export default RegionRoute;

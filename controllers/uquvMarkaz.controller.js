@@ -4,6 +4,7 @@ import { Op } from "sequelize";
 import { logger } from "../services/logger.js";
 import User from "../models/user.model.js"; // Foydalanuvchi ismini olish uchun
 import Comment from "../models/comment.model.js"; 
+import UserLikes from "../models/userLikes.model.js";
 
 async function findAll(req, res) {
     try {
@@ -34,8 +35,20 @@ async function findAll(req, res) {
                             attributes: ["id", "name"], // Komment yozgan foydalanuvchini qoshamiz
                         }
                     ]
+                },
+                {
+                    model: UserLikes,
+                    as: "likes",
+                    attributes: ["id", "createdAt"],
+                    include: [
+                        {
+                            model: User,
+                            as: "user",
+                            attributes: ["id", "name"], // Like qo'ygan foydalanuvchini qoshamiz
                 }
-            ],
+                
+            ],},
+        ]
         };
 
         if (filter && sortBy) {

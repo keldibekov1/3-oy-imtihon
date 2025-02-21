@@ -3,14 +3,15 @@ import OquvMarkaz from "../models/uquvMarkaz.model.js";
 
 async function FindAll(req, res) {
     try {
-
-        const regions = await Region.findAll(include: [
-            {
-                model: OquvMarkaz,
-                as: "oquvMarkazlar",
-                attributes: ["id", "name", "photo", "address"],
-            },
-        ]);
+        const regions = await Region.findAll({
+            include: [
+                {
+                    model: OquvMarkaz,
+                    as: "oquvMarkazlar",
+                    attributes: ["id", "name", "photo", "address"],
+                },
+            ],
+        });
 
         res.status(200).send({ data: regions });
         

@@ -15,13 +15,18 @@ const transporter = nodemailer.createTransport({
 });
 
 const registerSchema = Joi.object({
-    name: Joi.string().min(2).max(50).required(),
-    surname: Joi.string().min(2).max(50).required(),
-    password: Joi.string().min(6).required(),
-    type: Joi.string().valid("user", "admin", "seo").default("user"),
-    email: Joi.string().email().required(),
-    phone: Joi.string().min(9).max(13).required(),
-  });
+  name: Joi.string().min(2).max(50).required(),
+  surname: Joi.string().min(2).max(50).required(),
+  password: Joi.string().min(6).required(),
+  type: Joi.string().valid("user", "admin", "seo").default("user"),
+  email: Joi.string().email().required(),
+  phone: Joi.string()
+      .pattern(/^\+?\d{9,13}$/)
+      .required()
+      .messages({
+          "string.pattern.base": "Telefon raqam noto‘g‘ri formatda! (+998901234567 yoki 901234567 shaklida yozing)",
+      }),
+});
   
   const loginSchema = Joi.object({
     email: Joi.string().email().required(),

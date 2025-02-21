@@ -7,7 +7,7 @@ async function FindAll(req, res) {
             include: [
                 {
                     model: OquvMarkaz,
-                    as: "oquvMarkazlar",
+                    as: "OquvMarkazs",
                     attributes: ["id", "name", "photo", "address"],
                 },
             ],
@@ -20,6 +20,27 @@ async function FindAll(req, res) {
         res.status(500).send({ message: error.message });
     }
 }
+
+async function create(req, res) {
+    try {
+        const { name } = req.body; // Adjust these fields based on your Region model definition.
+
+        if (!name) {
+            return res.status(400).send({ message: "Name is required" });
+        }
+
+        const newRegion = await Region.create({
+            name
+        });
+
+        res.status(200).send({ data: newRegion, message: "Region created successfully" });
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ message: error.message });
+    }
+}
+
 
 async function FindOne(req, res) {
     try {
@@ -85,4 +106,4 @@ async function Delete(req, res) {
     }
 }
 
-export { FindAll, FindOne, Update , Delete};
+export { FindAll, FindOne, Update ,create, Delete};

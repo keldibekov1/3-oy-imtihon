@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:4009",
+        url: "http://10.10.2.184:4009",
       },
     ],
     components: {

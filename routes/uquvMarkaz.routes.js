@@ -88,29 +88,6 @@ router.get("/oquvmarkaz", findAll);
 
 /**
  * @swagger
- * /oquvmarkaz/{id}:
- *   get:
- *     summary: "Bitta o'quv markazini olish"
- *     tags:
- *       - "OquvMarkaz"
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       "200":
- *         description: "O'quv markazi ma'lumotlari"
- *       "404":
- *         description: "Ma'lumot topilmadi"
- *       "500":
- *         description: "Server xatosi"
- */
-router.get("/oquvmarkaz/:id", findOne);
-
-/**
- * @swagger
  * /oquvmarkaz:
  *   post:
  *     summary: "Yangi o'quv markazi yaratish"
@@ -129,22 +106,44 @@ router.get("/oquvmarkaz/:id", findOne);
  *               photo:
  *                 type: string
  *                 example: "https://example.com/photo.jpg"
- *               region:
- *                 type: string
- *                 example: "Toshkent"
+ *               regionId:
+ *                 type: integer
+ *                 example: 1
  *               address:
  *                 type: string
  *                 example: "Toshkent shahar, Chilonzor tumani"
- *               
  *     responses:
  *       "201":
  *         description: "O'quv markazi muvaffaqiyatli yaratildi"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "O'quv markazi muvaffaqiyatli yaratildi"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     regionId:
+ *                       type: integer
+ *                     address:
+ *                       type: string
+ *                     photo:
+ *                       type: string
  *       "400":
  *         description: "Noto‘g‘ri so‘rov"
  *       "500":
  *         description: "Server xatosi"
  */
 router.post("/oquvmarkaz", verifyToken, isSeo, create);
+
+
 
 /**
  * @swagger

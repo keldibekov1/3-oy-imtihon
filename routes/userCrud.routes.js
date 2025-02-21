@@ -3,7 +3,7 @@ import { Update, FindAll} from "../controllers/userCrud.controller.js";
 import isAdmin from "../middleware/isAdmin.js";
 import verifyToken from "../middleware/verifyToken.js";
 import User from "../models/user.model.js";
-
+import UserLikes from "../models/userLikes.model.js";
 import OquvMarkaz from "../models/uquvMarkaz.model.js";
 import Filial from "../models/filiallar.model.js";
 import Comment from "../models/comment.model.js";
@@ -106,6 +106,49 @@ userCrudRoute.get("/myinfo", verifyToken, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /users/{id}:
+ *   patch:
+ *     summary: Foydalanuvchini qisman yangilash (status va type o‘zgartirilmaydi)
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Foydalanuvchi ID-si
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Abdulla
+ *               surname:
+ *                 type: string
+ *                 example: Karimov
+ *               email:
+ *                 type: string
+ *                 example: abdulla@gmail.com
+ *               phone:
+ *                 type: string
+ *                 example: "+998901234567"
+ *     responses:
+ *       200:
+ *         description: Foydalanuvchi muvaffaqiyatli yangilandi
+ *       400:
+ *         description: Validatsiya xatosi yoki email band
+ *       404:
+ *         description: Foydalanuvchi topilmadi
+ *       500:
+ *         description: Server xatosi
+ */
+userCrudRoute.patch("/users/:id", verifyToken, isAdmin, Update);
 
 
 ///
@@ -243,20 +286,30 @@ userCrudRoute.get("/mycenter", verifyToken, async (req, res) => {
                         {
                             model: User,
                             as: "user",
-                            attributes: ["id", "name"], 
+                            attributes: ["id", "name", "surname", "email"], // User haqida to‘liq ma’lumot
                         }
                     ]
+                },
+                {
+                    model: UserLikes,
+                    as: "likes",
+                    attributes: ["id", "userId"],
                 }
             ],
         };
 
         const centers = await OquvMarkaz.findAll(queryOptions);
-        res.json(centers);
+
+        const responseData = centers.map(center => ({
+            ...center.toJSON(),
+            likeCount: center.likes.length 
+        }));
+
+        res.json(responseData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server xatosi" });
     }
 });
-
 
 export default userCrudRoute;

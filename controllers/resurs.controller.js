@@ -1,7 +1,8 @@
 import Resurs from "../models/resurs.model.js";
+import ResursCategory from "../models/resursCategory.model.js";
+import User from "../models/user.model.js";
 import { Op } from "sequelize";
 
-import ResursCategory from "../models/resursCategory.model.js";
 
 export const createResurs = async (req, res) => {
   try {
@@ -30,32 +31,43 @@ export const createResurs = async (req, res) => {
 
 export const getAllResurs = async (req, res) => {
   try {
-    const { page = 1, size = 10, sortBy , filter } = req.query;
+    const { page = 1, size = 10, sortBy, filter } = req.query;
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
 
     const queryOptions = {
       include: [
-        { model: ResursCategory, attributes: ["name"] }
+        {
+          model: ResursCategory,
+          attributes: ["name"],
+        },
+        {
+          model: User,
+          attributes: ["name", "surname", "email"], // Faqat kerakli maydonlarni chaqiramiz
+        },
       ],
       limit,
       offset,
     };
 
-    if (filter && sortBy) {
+    // **Filter qo‘shish**
+    if (filter) {
       queryOptions.where = {};
-  
+      
       if (sortBy === "name") {
-          queryOptions.where.name = { [Op.like]: `%${filter}%` };
+        queryOptions.where.name = { [Op.like]: `%${filter}%` };
+      } else if (sortBy === "category") {
+        queryOptions.include[0].where = { name: { [Op.like]: `%${filter}%` } };
       }
-  
-      if (sortBy === "category") {
-          queryOptions.where.category = { [Op.like]: `%${filter}%` };
-      }
-  }
+    }
 
+    // **Tartiblash qo‘shish**
     if (sortBy) {
-      queryOptions.order = [[sortBy, 'ASC']];
+      if (sortBy === "category") {
+        queryOptions.order = [[ResursCategory, "name", "ASC"]];
+      } else {
+        queryOptions.order = [[sortBy, "ASC"]];
+      }
     }
 
     const { rows, count } = await Resurs.findAndCountAll(queryOptions);
@@ -74,17 +86,27 @@ export const getAllResurs = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
 
 
 
+
 export const getResursById = async (req, res) => {
   try {
     const resurs = await Resurs.findByPk(req.params.id, {
-      include: [{ model: ResursCategory, attributes: ["name"] }],
+      include: [
+        {
+          model: ResursCategory,
+          attributes: ["name"],
+        },
+        {
+          model: User,
+          attributes: ["name", "surname", "email"], // Faqat kerakli maydonlarni chaqiramiz
+        },
+      ],
     });
 
     if (!resurs) {
@@ -96,6 +118,7 @@ export const getResursById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const updateResurs = async (req, res) => {
   try {

@@ -28,7 +28,7 @@ phone: Joi.string()
 async function Update(req, res) {
     try {
         const { id } = req.params;
-        const { name, surname, email, phone, password,status } = req.body;
+        const { name, surname, email, phone, password,status, type } = req.body;
 
         const user = await User.findByPk(id);
         if (!user) {
@@ -53,6 +53,10 @@ async function Update(req, res) {
         }
         if (status !== undefined) {
             updateData.status = status
+        }
+        if (type!= undefined) {
+
+            updateData.type = type
         }
 
         await user.update(updateData);

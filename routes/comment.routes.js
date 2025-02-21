@@ -153,7 +153,7 @@ router.post("/comments", verifyToken,createComment);
  *       "500":
  *         description: "Server xatosi"
  */
-router.put("/comments/:id",verifyToken, selfComment, updateComment);
+router.patch("/comments/:id",verifyToken, selfComment, updateComment);
 
 /**
  * @swagger

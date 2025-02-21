@@ -23,5 +23,10 @@ const UserLikes = database.define("UserLikes", {
     },
   },
 });
+UquvMarkaz.hasMany(UserLikes, { foreignKey: "oquvmarkazId", as: "likes" });
+UserLikes.belongsTo(UquvMarkaz, { foreignKey: "oquvmarkazId" });
+
+User.hasMany(UserLikes, { foreignKey: "userId", as: "userLikes" });
+UserLikes.belongsTo(User, { foreignKey: "userId" });
 
 export default UserLikes;

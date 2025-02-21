@@ -18,7 +18,8 @@ const router = Router();
  *   post:
  *     tags: [Reception]
  *     summary: Add a new reception (enroll a user)
- *     description: Add a new reception by providing userId and oquvmarkazId (course and user)
+ *     description: Add a new reception by providing userId and oquvmarkazId (course and user).
+ *                  After successful enrollment, a PDF confirmation file is generated and returned.
  *     requestBody:
  *       required: true
  *       content:
@@ -31,13 +32,21 @@ const router = Router();
  *                 description: The ID of the course the user is enrolling in
  *     responses:
  *       201:
- *         description: Reception created successfully
+ *         description: Reception created successfully, PDF receipt generated
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: Authorization required
  *       404:
  *         description: User or OquvMarkaz not found
  *       500:
  *         description: Internal server error
  */
-router.post("/receptions",verifyToken, addReception);
+router.post("/receptions", verifyToken, addReception);
+
 
 /**
  * @swagger

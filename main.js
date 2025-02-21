@@ -16,6 +16,7 @@ import MulterRoute from "./routes/upload.routes.js";
 import userCrudRoute from "./routes/userCrud.routes.js";
 import cors from "cors";
 import getOquvMarkazStudentsRoute from "./routes/oquvMarkazRoutes.js"
+import RegionRoute from "./routes/region.routes.js";
 
 
 
@@ -44,6 +45,7 @@ app.use("/", excelRoute)
 app.use("/", MulterRoute)
 app.use("/", userCrudRoute)
 app.use("/", getOquvMarkazStudentsRoute)
+app.use("/", RegionRoute)
 
 setupSwagger(app);
 

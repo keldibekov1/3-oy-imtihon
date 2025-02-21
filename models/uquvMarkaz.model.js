@@ -1,6 +1,8 @@
 import { DataTypes } from "sequelize";
 import database from "../config/db.js";
 import User from "./user.model.js";
+import Region from "./region.model.js";
+
 const OquvMarkaz = database.define("OquvMarkaz", {
   id: {
     type: DataTypes.BIGINT,
@@ -14,9 +16,13 @@ const OquvMarkaz = database.define("OquvMarkaz", {
   photo: {
     type: DataTypes.STRING,
   },
-  region: {
-    type: DataTypes.STRING,
+  regionId: {
+    type: DataTypes.BIGINT,
     allowNull: false,
+    references: {
+      model: Region,
+      key: "id",
+    },
   },
   address: {
     type: DataTypes.STRING,
@@ -34,5 +40,8 @@ const OquvMarkaz = database.define("OquvMarkaz", {
 
 User.hasMany(OquvMarkaz, { foreignKey: "createdBy" });
 OquvMarkaz.belongsTo(User, { as: "creator", foreignKey: "createdBy" });
+
+Region.hasMany(OquvMarkaz, { foreignKey: "regionId" });
+OquvMarkaz.belongsTo(Region, { as: "region", foreignKey: "regionId" });
 
 export default OquvMarkaz;

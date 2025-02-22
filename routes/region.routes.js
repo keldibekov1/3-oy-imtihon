@@ -2,6 +2,7 @@
 import express from "express";
 import { FindAll, FindOne, Update, Delete, create } from "../controllers/region.controller.js";
 import isAdmin from "../middleware/isAdmin.js";
+import verifyToken from "../middleware/verifyToken.js";
 
 const RegionRoute = express.Router();
 
@@ -22,7 +23,7 @@ const RegionRoute = express.Router();
  *       200:
  *         description: Barcha regionlar ro'yxati
  */
-RegionRoute.get("/regions", FindAll);
+RegionRoute.get("/regions",verifyToken, FindAll);
 
 /**
  * @swagger
@@ -43,7 +44,7 @@ RegionRoute.get("/regions", FindAll);
  *       404:
  *         description: Region topilmadi
  */
-RegionRoute.get("/regions/:id", FindOne);
+RegionRoute.get("/regions/:id",verifyToken, FindOne);
 
 /**
  * @swagger
@@ -112,7 +113,7 @@ RegionRoute.get("/regions/:id", FindOne);
  *                     example: "Internal server error message."
  */
 
-RegionRoute.post("/regions", create);
+RegionRoute.post("/regions",verifyToken, create);
 
 
 /**
@@ -144,7 +145,7 @@ RegionRoute.post("/regions", create);
  *       404:
  *         description: Region topilmadi
  */
-RegionRoute.patch("/regions/:id",isAdmin, Update);
+RegionRoute.patch("/regions/:id",verifyToken,isAdmin, Update);
 
 /**
  * @swagger
@@ -165,6 +166,6 @@ RegionRoute.patch("/regions/:id",isAdmin, Update);
  *       404:
  *         description: Region topilmadi
  */
-RegionRoute.delete("/regions/:id",isAdmin ,Delete);
+RegionRoute.delete("/regions/:id",verifyToken,isAdmin ,Delete);
 
 export default RegionRoute;

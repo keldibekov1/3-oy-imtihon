@@ -95,7 +95,7 @@ const router = express.Router();
  *       "500":
  *         description: "Server xatosi"
  */
-router.get("/filial", getAllFiliallar);
+router.get("/filial",verifyToken, getAllFiliallar);
 
 
 /**
@@ -119,8 +119,8 @@ router.get("/filial", getAllFiliallar);
  *                 type: string
  *                 example: "https://example.com/photo.jpg"
  *               region:
- *                 type: string
- *                 example: "Toshkent"
+ *                 type: integer
+ *                 example: 1
  *               phone:
  *                 type: string
  *                 example: "+998901234567"

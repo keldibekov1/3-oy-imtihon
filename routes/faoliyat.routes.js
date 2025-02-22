@@ -6,8 +6,7 @@ import {
   deleteFaoliyat,
 } from "../controllers/faoliyat.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
-import isOquvmarkazCreator from "../middleware/isOquvmarkazCreator.js";
-import isFaoliyatOwner from "../middleware/isFaoliyatOwner.js";
+import isAdmin from "../middleware/isAdmin.js";
 
 const router = express.Router();
 
@@ -105,7 +104,7 @@ router.get("/faoliyat", getAllFaoliyat);
  *               photo:
  *                 type: string
  *                 example: "https://example.com/photo.jpg"
- *               OquvmarkazId:
+ *               oquvmarkazId:
  *                 type: integer
  *                 example: 1
  *     responses:
@@ -116,7 +115,7 @@ router.get("/faoliyat", getAllFaoliyat);
  *       "500":
  *         description: "Server xatosi"
  */
-router.post("/faoliyat",verifyToken, isOquvmarkazCreator, createFaoliyat);
+router.post("/faoliyat",verifyToken, isAdmin, createFaoliyat);
 
 /**
  * @swagger
@@ -147,7 +146,7 @@ router.post("/faoliyat",verifyToken, isOquvmarkazCreator, createFaoliyat);
  *               photo:
  *                 type: string
  *                 example: "https://example.com/new-photo.jpg"
- *               filialId:
+ *               oquvmarkazId:
  *                 type: integer
  *                 example: 2
  *     responses:
@@ -158,7 +157,7 @@ router.post("/faoliyat",verifyToken, isOquvmarkazCreator, createFaoliyat);
  *       "500":
  *         description: "Server xatosi"
  */
-router.patch("/faoliyat/:id",verifyToken, isFaoliyatOwner, updateFaoliyat);
+router.patch("/faoliyat/:id",verifyToken, isAdmin, updateFaoliyat);
 
 /**
  * @swagger
@@ -181,6 +180,6 @@ router.patch("/faoliyat/:id",verifyToken, isFaoliyatOwner, updateFaoliyat);
  *       "500":
  *         description: "Server xatosi"
  */
-router.delete("/faoliyat/:id",verifyToken, isFaoliyatOwner, deleteFaoliyat);
+router.delete("/faoliyat/:id",verifyToken, isAdmin, deleteFaoliyat);
 
 export default router;

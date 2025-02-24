@@ -1,6 +1,6 @@
 import database from "../config/db.js";
 import { DataTypes } from "sequelize";
-import Filial from "./filiallar.model.js";
+import OquvMarkaz from "./uquvMarkaz.model.js";
 
 const Faoliyat = database.define("Faoliyat", {
     id: {
@@ -19,14 +19,15 @@ const Faoliyat = database.define("Faoliyat", {
     photo: {
       type: DataTypes.STRING,
     },
-    filialId: {
+    oquvmarkazId: {
       type: DataTypes.BIGINT,
       references: {
-        model: Filial,
+        model: OquvMarkaz,
         key: "id",
       },
     },
   });
   
-
+OquvMarkaz.hasMany(Faoliyat, { foreignKey: "oquvmarkazId" }); // Bir o'quv markazda bir nechta faoliyat
+Faoliyat.belongsTo(OquvMarkaz, { foreignKey: "oquvmarkazId" });
   export default Faoliyat;

@@ -1,93 +1,192 @@
-import Filial  from "../models/filiallar.model.js"; // Filial va OquvMarkaz modellari import qilinadi
+import { Op } from "sequelize";
+import Filial  from "../models/filiallar.model.js"; 
 import OquvMarkaz from "../models/uquvMarkaz.model.js"
-// Filial yaratish
+import { logger } from "../services/logger.js";
+
 const createFilial = async (req, res) => {
   try {
-    const { name, photo, region, phone, address, oquvmarkazId } = req.body;
+    const { name, region, phone, address, oquvmarkazId } = req.body;
+    const userId = req.user.id;
+    const userType = req.user.type; 
 
-    // O‘quv markazi mavjudligini tekshirish
-    const oquvmarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
+    if (userType === "user") {
+      return res.status(403).json({ message: "Bu amalni bajarish uchun sizda huquq yo'q" });
+  }
 
-    if (!oquvmarkaz) {
-      return res.status(404).json({ message: "O‘quv markazi topilmadi." });
+    const existingFilial = await Filial.findOne({ where: { phone } });
+    if (existingFilial) {
+      return res.status(400).json({ message: "Bu telefon raqam allaqachon band" });
     }
 
-    // Yangi filial yaratish
+    let oquvMarkaz;
+
+    if (userType !== "admin") {
+      oquvMarkaz = await OquvMarkaz.findOne({
+        where: { id: oquvmarkazId, createdBy: userId },
+      });
+
+      if (!oquvMarkaz) {
+        return res.status(403).json({ message: "Bu o‘quv markazga filial qo‘sha olmaysiz" });
+      }
+    } else {
+      oquvMarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
+      if (!oquvMarkaz) {
+        return res.status(404).json({ message: "O‘quv markaz topilmadi" });
+      }
+    }
+
     const newFilial = await Filial.create({
       name,
-      photo,
       region,
       phone,
       address,
       oquvmarkazId,
     });
 
-    return res.status(201).json(newFilial); // Yangi filialni qaytarish
+    res.status(201).json({ message: "Filial muvaffaqiyatli qo‘shildi", filial: newFilial });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
+    res.status(500).json({ message: "Xatolik yuz berdi", error: error.message });
   }
 };
 
-// Barcha filiallarni olish
+
+
+
 const getAllFiliallar = async (req, res) => {
   try {
-    const filiallar = await Filial.findAll({
-      include: ["OquvMarkaz"], // Filial va uning tegishli O‘quv Markazi bilan birga olish
-    });
+    const { page = 1, size = 10, sortBy, filter } = req.query;
 
-    return res.status(200).json(filiallar); // Filiallar ro‘yxatini qaytarish
+    const limit = parseInt(size);
+    const offset = (parseInt(page) - 1) * limit;
+
+    const queryOptions = {
+      include: [
+        {
+          model: OquvMarkaz,
+          as: "oquvMarkaz", 
+        },
+      ],
+      limit,
+      offset,
+    };
+
+    if (filter && sortBy) {
+      queryOptions.where = {};
+  
+      if (sortBy === "name") {
+          queryOptions.where.name = { [Op.like]: `%${filter}%` };
+      }
+  
+      if (sortBy === "region") {
+          queryOptions.where.region = { [Op.like]: `%${filter}%` };
+      }
+    }
+
+    if (sortBy) {
+      queryOptions.order = [[sortBy, 'ASC']];
+    }
+
+    const { rows, count } = await Filial.findAndCountAll(queryOptions);
+    const totalItems = count;
+    const totalPages = Math.ceil(totalItems / limit);
+    logger.info(`Filiallar royxati sorovi: page=${page}, size=${size}, sortBy=${sortBy}, filter=${filter}`);
+
+    return res.status(200).json({
+      message: "Success",
+      data: rows,
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: parseInt(page),
+        pageSize: limit,
+      },
+    });
   } catch (error) {
+    logger.error("Filiallarni olishda xatolik", { error: error.message });
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
 
-// Filialni yangilash
 const updateFilial = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, photo, region, phone, address, oquvmarkazId } = req.body;
+    const updates = req.body;
+    const userId = req.user.id;
+    const userType = req.user.type;
 
-    const filial = await Filial.findByPk(id);
+    if (userType === "user") {
+      return res.status(403).json({ message: "Bu amalni bajarish uchun sizda huquq yo'q" });
+  }
+
+    const filial = await Filial.findByPk(id, {
+      include: {
+        model: OquvMarkaz,
+        as: "oquvMarkaz",
+      },
+    });
 
     if (!filial) {
       return res.status(404).json({ message: "Filial topilmadi." });
     }
 
-    // Filialni yangilash
-    filial.name = name || filial.name;
-    filial.photo = photo || filial.photo;
-    filial.region = region || filial.region;
-    filial.phone = phone || filial.phone;
-    filial.address = address || filial.address;
-    filial.oquvmarkazId = oquvmarkazId || filial.oquvmarkazId;
+    if (filial.oquvMarkaz.createdBy !== userId && userType !== "admin") {
+      return res.status(403).json({ message: "Siz faqat o'zingiz yaratgan filiallarni o'zgartira olasiz" });
+    }
 
-    await filial.save(); // O‘zgarishlarni saqlash
+    if (updates.phone && updates.phone !== filial.phone) {
+      const existingFilial = await Filial.findOne({ where: { phone: updates.phone } });
+      if (existingFilial) {
+        return res.status(400).json({ message: "Bu telefon raqami boshqa filialda mavjud" });
+      }
+    }
 
-    return res.status(200).json(filial); // Yangilangan filialni qaytarish
+    Object.keys(updates).forEach((key) => {
+      if (updates[key] !== undefined) {
+        filial[key] = updates[key];
+      }
+    });
+
+    await filial.save();
+    return res.status(200).json(filial);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }
 };
+
 
 // Filialni o‘chirish
 const deleteFilial = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const filial = await Filial.findByPk(id);
+    const userId = req.user.id; 
+    const userType = req.user.type; 
+    if (userType === "user") {
+      return res.status(403).json({ message: "Bu amalni bajarish uchun sizda huquq yo'q" });
+  }
+    const filial = await Filial.findByPk(id, {
+      include: {
+        model: OquvMarkaz,
+        as: "oquvMarkaz",
+      },
+    });
 
     if (!filial) {
+      logger.warn(`Ochirishda filial topilmadi: id=${id}`);
       return res.status(404).json({ message: "Filial topilmadi." });
     }
 
-    // Filialni o‘chirish
-    await filial.destroy();
+    if (filial.oquvMarkaz.createdBy !== userId && userType !== "admin") {
+      return res.status(403).json({ message: "Siz faqat o'zingiz yaratgan filiallarni o'chira olasiz" });
+    }
 
-    return res.status(204).json(); // Muvaffaqiyatli o‘chirilganini bildirish
+    await filial.destroy();
+    logger.info(`Filial o‘chirildi: id=${id}`);
+
+    return res.status(200).json({ message: "Filial muvaffaqiyatli o'chirildi." });
   } catch (error) {
+    logger.error("Filial o'chirishda xatolik", { error: error.message });
     console.error(error);
     return res.status(500).json({ message: "Serverda xatolik yuz berdi." });
   }

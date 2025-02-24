@@ -22,7 +22,7 @@ const Filial = database.define("Filial", {
   phone: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+   
   },
   address: {
     type: DataTypes.STRING,
@@ -37,4 +37,6 @@ const Filial = database.define("Filial", {
   },
 });
 
+OquvMarkaz.hasMany(Filial, { foreignKey: "oquvmarkazId", as: "filials" });
+Filial.belongsTo(OquvMarkaz, { foreignKey: "oquvmarkazId", as: "oquvMarkaz" });
 export default Filial;

@@ -1,3 +1,4 @@
+//Associations.js
 import User from "./user.model.js";
 import OquvMarkaz from"./uquvMarkaz.model.js";
 import Filial from "./filiallar.model.js";
@@ -39,3 +40,11 @@ Yonalish.belongsToMany(OquvMarkaz, { through: "OquvMarkaz_Yonalish" });
 // User - Reception (Many-to-Many)
 User.belongsToMany(OquvMarkaz, { through: Reception });
 OquvMarkaz.belongsToMany(User, { through: Reception });
+
+
+// associations.js
+
+import User from "./user.model.js";
+import OquvMarkaz from "./uquvMarkaz.model.js";
+import Reception from "./reception.model.js";
+

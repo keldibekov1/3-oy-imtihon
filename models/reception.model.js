@@ -1,7 +1,10 @@
+// reception.model.js
+
 import { DataTypes } from "sequelize";
-import database from "../config/db";
-import OquvMarkaz from "./uquvMarkaz.model.js"
+import database from "../config/db.js";
 import User from "./user.model.js";
+import OquvMarkaz from "./uquvMarkaz.model.js";
+
 const Reception = database.define("Reception", {
   id: {
     type: DataTypes.BIGINT,
@@ -27,5 +30,9 @@ const Reception = database.define("Reception", {
     defaultValue: DataTypes.NOW,
   },
 });
+
+// Reception modelida bog'lanishlar
+Reception.belongsTo(User, { foreignKey: "userId" });
+Reception.belongsTo(OquvMarkaz, { foreignKey: "oquvmarkazId" });
 
 export default Reception;

@@ -36,4 +36,7 @@ const Comment = database.define("Comment", {
   },
 });
 
+OquvMarkaz.hasMany(Comment, { foreignKey: "oquvmarkazId", as: "comments" });
+Comment.belongsTo(OquvMarkaz, { foreignKey: "oquvmarkazId", as: "oquvmarkaz" });
+Comment.belongsTo(User, { foreignKey: "userId", as: "user" });
 export default Comment;

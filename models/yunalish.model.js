@@ -14,7 +14,7 @@ const Yonalish = database.define("Yonalish", {
   photo: {
     type: DataTypes.STRING,
   },
-  faoliyatid: {
+  faoliyatId: {
     type: DataTypes.BIGINT,
     references: {
       model: Faoliyat,

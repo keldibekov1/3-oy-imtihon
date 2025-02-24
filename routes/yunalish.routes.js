@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { findAll, findOne, create, Update, remove } from "../controllers/yunalish.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
-import isSeo from "../middleware/isSeo.js";
 import isYonalishCreator from "../middleware/isYonalishCreator.js";
+import isAdmin from "../middleware/isAdmin.js";
 
 const router = Router();
 
@@ -146,7 +146,7 @@ router.get("/yonalish/:id", findOne);
  *       500:
  *         description: Internal server error
  */
-router.post("/yonalish", verifyToken,isYonalishCreator,  create);
+router.post("/yonalish", verifyToken,isAdmin,isYonalishCreator,  create);
 
 /**
  * @swagger
@@ -186,7 +186,7 @@ router.post("/yonalish", verifyToken,isYonalishCreator,  create);
  *       500:
  *         description: Internal server error
  */
-router.patch("/yonalish/:id", verifyToken,  Update);
+router.patch("/yonalish/:id", verifyToken,isAdmin,isYonalishCreator,  Update);
 
 /**
  * @swagger
@@ -210,6 +210,6 @@ router.patch("/yonalish/:id", verifyToken,  Update);
  *       500:
  *         description: Internal server error
  */
-router.delete("/yonalish/:id",verifyToken,  remove);
+router.delete("/yonalish/:id",verifyToken,isAdmin,isYonalishCreator,  remove);
 
 export default router;

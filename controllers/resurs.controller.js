@@ -128,6 +128,10 @@ export const updateResurs = async (req, res) => {
     if (!resurs) {
       return res.status(404).json({ message: "Resurs topilmadi" });
     }
+    const category = await ResursCategory.findByPk(resursCategoryId);
+      if (!category) {
+          return res.status(404).json({ message: "Kategoriya topilmadi" });
+      }
 
     resurs.name = name || resurs.name;
     resurs.media = media || resurs.media;

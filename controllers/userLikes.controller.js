@@ -1,5 +1,6 @@
 import UserLikes from "../models/userLikes.model.js";
 import { Op } from "sequelize";
+import OquvMarkaz from"../models/uquvMarkaz.model.js"
 
 async function findAll(req, res) {
     try {
@@ -76,6 +77,17 @@ async function create(req, res) {
 
         if (!oquvmarkazId) {
             return res.status(400).json({ message: "oquvmarkazId talab qilinadi" });
+        }
+
+        const existingLike = await UserLikes.findOne({ where: { userId, oquvmarkazId } });
+        if (existingLike) {
+            return res.status(400).json({ message: "Siz allaqachon like bosgansiz" });
+        }
+
+        
+        const oquvMarkaz = await OquvMarkaz.findByPk(oquvmarkazId);
+        if (!oquvMarkaz) {
+            return res.status(404).json({ message: "O‘quv markaz topilmadi" });
         }
 
         const newLike = await UserLikes.create({ userId, oquvmarkazId }); 
